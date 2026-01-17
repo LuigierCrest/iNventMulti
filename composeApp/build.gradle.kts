@@ -95,6 +95,8 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.ui:ui-graphics:1.5.4")
 }
 
 compose.desktop {
