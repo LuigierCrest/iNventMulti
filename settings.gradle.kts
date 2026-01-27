@@ -35,3 +35,6 @@ plugins {
 include(":composeApp")
 include(":server")
 include(":shared")
+include(":data")
+include(":domain")
+include(":presentation")
