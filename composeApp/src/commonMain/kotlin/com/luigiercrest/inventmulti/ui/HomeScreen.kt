@@ -1,21 +1,31 @@
 package com.luigiercrest.inventmulti.ui
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.luigiercrest.domain.models.AdminCategory
+import com.luigiercrest.domain.models.listAdminCategories
 import com.luigiercrest.presentation.home.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -24,31 +34,45 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(backStack: NavBackStack<NavKey>, viewModel: HomeViewModel = koinViewModel(), modifier: Modifier = Modifier) {
 
-    // backstack.remove(NavRoutes.login)
-
     Screen {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("HomeBar") }
+                    // Colocar el centro de trabajo
+                    title = { Text("HomeBar") },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
                 )
             },
             modifier = modifier
-        ){
-            Text(text = "Home", style = MaterialTheme.typography.headlineLarge)
+        ){ innerPadding ->
+
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(46.dp)
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
+                // Crear una clase con las categorias que deben aparecer según el rol
+                //val listaCategorias = MutableList<String>
                 item {
-                    Text(text = "Home", style = MaterialTheme.typography.headlineLarge)
+
+                    Spacer(modifier = Modifier.size(4.dp))
+                    // Colocar el rol del usuario
+                    Text(text = "Categorías", style = MaterialTheme.typography.headlineMedium)
                 }
-                //Tareas que recoge de la opción seleccionada en la pantalla principal y las muestra según el rol.
+
+                items(items = listAdminCategories) { adminCategory ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            //.clickable()
+
+                    ){
+                        Text(text = adminCategory.categoria, style = MaterialTheme.typography.headlineSmall)
+                    }
+
+                }
 
 
-//                val categorias by viewModel.categorias.collectAsStateWithLifecycle()
-//                items(categorías){
-//                }
+
 
             }
         }
