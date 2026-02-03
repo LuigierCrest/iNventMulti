@@ -8,7 +8,10 @@ data class LoginResponseDTO(
     val expiresIn: Int? = null,
     val rol: String? = null,
     val idCentro: Int? = null,
-    val idUsuario: Int? = null
+    val idUsuario: Int? = null,
+    val apiCodes: List<String>? = null,
+    val apiMessages: List<String>? = null,
+    val statusCode: Int? = null
 )
 
 

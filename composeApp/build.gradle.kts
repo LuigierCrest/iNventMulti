@@ -7,7 +7,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlinSerialization)
+//    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
@@ -18,7 +19,8 @@ kotlin {
     }
 
     
-    jvm()
+    jvm(){
+    }
     
     js {
         browser()
@@ -57,19 +59,21 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(compose.materialIconsExtended)
             implementation(libs.ktor.clientCIO)
 
             //implementation(libs.coil.compose)
             //implementation(libs.coil.network.ktor3)
 
-            //implementation(libs.koin.compose.navigation3)
-            //implementation(libs.jetbrains.navigation3.ui)
-            //implementation(libs.jetbrains.lifecycle.viewmodel.nav3)
+            implementation(libs.koin.compose.navigation3)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.jetbrains.navigation3.material3.adaptive)
+            implementation(libs.jetbrains.lifecycle.viewmodel.nav3)
             implementation(libs.jetbrains.lifecycle.viewmodel)
             implementation(libs.kotlinx.serialization.json)
 //            implementation(libs.androidx.datastore)
 //            implementation(libs.androidx.datastore.preferences)
+
+            implementation(libs.material.icons.extended)
 
 
         }
@@ -111,37 +115,6 @@ android {
 }
 
 dependencies {
-
-
-    // Compose Multiplatform
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.material3)
-    implementation(compose.ui)
-    // Recursos de Compose
-    implementation(compose.components.resources)
-    implementation("androidx.activity:activity-compose:1.8.0")
-    implementation("androidx.compose.ui:ui:1.5.4")
-    implementation("androidx.compose.ui:ui-tooling:1.5.4")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation("androidx.compose.ui:ui-graphics:1.5.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-
-    // Voyager para navegación
-    implementation("cafe.adriel.voyager:voyager-navigator:1.0.0")
-    implementation("cafe.adriel.voyager:voyager-transitions:1.0.0")
-
-    // Ktor Client
-    implementation("io.ktor:ktor-client-core:2.3.7")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
-    implementation("io.ktor:ktor-client-logging:2.3.7")
-    implementation("io.ktor:ktor-client-cio:2.3.7")
-    implementation("io.ktor:ktor-client-okhttp:2.3.7")
-
-    // Corrutinas
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation(project(":presentation"))
 
     debugImplementation(compose.uiTooling)
 

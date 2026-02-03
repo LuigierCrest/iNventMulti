@@ -5,6 +5,9 @@ data class LoginResponseModel(
     val expiresIn: Int?,
     val rol: String?,
     val idCentro: Int?,
-    val idUsuario: Int?
+    val idUsuario: Int?,
+    val apiCodes: List<String>?,
+    val apiMessages: List<String>?,
+    val statusCode: Int?
 )
 

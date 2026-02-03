@@ -1,0 +1,11 @@
+package com.luigiercrest.presentation.di
+
+import com.luigiercrest.presentation.home.HomeViewModel
+import org.koin.core.module.dsl.viewModel
+import com.luigiercrest.presentation.login.LoginViewModel
+import org.koin.dsl.module
+
+val presentationModule = module {
+    viewModel { LoginViewModel(get(), get()) }
+    viewModel { HomeViewModel() }
+}

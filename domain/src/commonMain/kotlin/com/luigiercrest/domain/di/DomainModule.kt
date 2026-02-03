@@ -1,4 +1,4 @@
-package com.luigiercrest.domain
+package com.luigiercrest.domain.di
 
 import com.luigiercrest.domain.repository.LoginRepository
 import com.luigiercrest.domain.Utils.LoginUtil
