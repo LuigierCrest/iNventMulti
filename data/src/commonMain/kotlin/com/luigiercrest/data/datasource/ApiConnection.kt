@@ -16,7 +16,8 @@ import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 
 class ApiConnection(private val httpClient: HttpClient) {
-    private val BASE_URL = "http://192.168.1.182:8080"
+    //private val BASE_URL = "http://192.168.1.182:8080"
+    private val BASE_URL = "https://inventapi.mooo.com"
 
     // local P14s = "http://192.168.1.182:8080"
     private val LOGIN_URL = "${BASE_URL}/api/login"
