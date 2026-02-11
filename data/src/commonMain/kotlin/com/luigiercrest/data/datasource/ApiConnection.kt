@@ -38,6 +38,7 @@ class ApiConnection(private val httpClient: HttpClient) {
             val body = try {
                 response.bodyAsText()
             } catch (e: Exception) {
+                println(e.message)
                 null
             }
 
