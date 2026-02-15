@@ -2,7 +2,8 @@ package com.luigiercrest.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.luigiercrest.domain.Utils.LoginUtil
+import com.luigiercrest.domain.usecase.LoginUseCase
+import com.luigiercrest.presentation.navigation.AuthNavigation
 import com.luigiercrest.presentation.security.AuthData
 import com.luigiercrest.presentation.security.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val loginUtil: LoginUtil, private val secureStorage: SecureStorage) : ViewModel() {
+class LoginViewModel(private val loginUseCase: LoginUseCase, private val secureStorage: SecureStorage) : ViewModel() {
     private val _navigationState = MutableStateFlow<AuthNavigation?>(null)
     val navigationState = _navigationState.asSharedFlow()
 
@@ -36,8 +37,8 @@ class LoginViewModel(private val loginUtil: LoginUtil, private val secureStorage
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                // Realiza la llamada a la API utilizando el LoginUtil
-                val result = loginUtil.login(dni.value, password.value)
+                // Realiza la llamada a la API utilizando el LoginUtil, devuelve un LoginResponseModel a través de loginRepository.login(dni.password)
+                val result = loginUseCase.login(dni.value, password.value)
 
                 result.onSuccess { loginResponseModel ->
                     // Actualiza el estado con los datos del login
@@ -60,6 +61,7 @@ class LoginViewModel(private val loginUtil: LoginUtil, private val secureStorage
                         )
                     }
                     // Navega a la HomeScreen
+                    // NECESITO PASAR EL AUTHDATA AL HOME
                      _navigationState.emit(AuthNavigation.ToHome)
 
                 }.onFailure { error ->

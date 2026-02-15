@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.luigiercrest.inventmulti.navigation.NavRoutes
-import com.luigiercrest.presentation.login.AuthNavigation
+import com.luigiercrest.presentation.navigation.AuthNavigation
 import inventmulti.composeapp.generated.resources.Res
 import inventmulti.composeapp.generated.resources.iNvent_logo_wellcome
 import org.jetbrains.compose.resources.painterResource
@@ -52,7 +52,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun LoginScreen(backStack: NavBackStack<NavKey>, viewModel: LoginViewModel = koinViewModel()) {
+fun LoginScreen(
+    backStack: NavBackStack<NavKey>,
+    viewModel: LoginViewModel = koinViewModel()
+) {
     val state = viewModel.state.collectAsState()
 
     val dniState = viewModel.dni.collectAsState()

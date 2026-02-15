@@ -1,36 +1,42 @@
 package com.luigiercrest.inventmulti.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.luigiercrest.inventmulti.models.CategoryModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TareasScreen(rol: String, centro : Int) {
+fun CategoryScreen(
+    category: CategoryModel,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Screen {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("${rol}: ${centro}") },
+                    title = { Text(category.categoria) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {onBackClick()}) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = "Volver"
@@ -38,26 +44,25 @@ fun TareasScreen(rol: String, centro : Int) {
                         }
                     }
                 )
-            }
+            },
+            modifier = modifier
         ){ padding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .padding(padding),
+                contentPadding = PaddingValues(16.dp)
             ) {
-                //Tareas que recoge de la opción seleccionada en la pantalla principal y las muestra según el rol.
-                Text("Tarea GET")
-                Text("Tarea POST")
-                Text("Tarea PUSH")
+                //Tareas que recoge de la categoría seleccionada en la pantalla principal y las muestra según el rol.
+                item {
+                    Text("Categoría: ${category.categoria}")
+                    Text("Descripción: ${category.descripcion}")
+                    Text("Lista:")
+                }
+
 
             }
         }
     }
 
-}
-
-@Composable
-@Preview
-fun TareasScreenPreview(){
-    TareasScreen("ADMIN", 35000000)
 }

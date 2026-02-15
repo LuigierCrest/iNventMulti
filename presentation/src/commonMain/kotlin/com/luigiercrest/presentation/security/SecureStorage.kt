@@ -12,7 +12,7 @@ interface SecureStorage {
     suspend fun saveAuth(auth: AuthData)
     suspend fun getAuth(): AuthData?
     suspend fun clearAuth()
-    // getToken
+    // suspend fun getToken(): String?
     // getRol
     // getExpiresIn
     // getIdCentro

@@ -4,6 +4,7 @@ import com.luigiercrest.presentation.security.AuthData
 import com.luigiercrest.presentation.security.SecureStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.prefs.Preferences
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
@@ -22,9 +23,29 @@ class DesktopSecureStorage : SecureStorage {
     private val keyIdUsuario = "auth_id_usuario_enc"
     private val keyIdCentro = "auth_id_centro_enc"
 
-    // clave derivada desde variable de entorno APP_SECRET (obligatoria para seguridad)
+    private fun getAppSecret(): String {
+        // 1. Intentar desde variable de entorno
+        System.getenv("APP_SECRET")?.let { return it }
+        // 2. Intentar desde archivo local.properties en raíz del proyecto
+        val projectRoot = File(System.getProperty("user.dir"))
+        val localPropsFile = File(projectRoot, "local.properties")
+        if (localPropsFile.exists()) {
+            localPropsFile.readLines().forEach { line ->
+                if (line.startsWith("APP_SECRET=")) {
+                    return line.substringAfter("APP_SECRET=").trim()
+                }
+            }
+        }
+        // 3. Generar secreto por defecto (solo para desarrollo)
+        val defaultSecret = "Una-Clave-muy-secreta-solo-para-desarrollo-no-usar-en-producción-1234"
+        println("⚠️  ADVERTENCIA: Usando secreto por defecto. Para producción, configura APP_SECRET en:")
+        println("   - Variable de entorno: APP_SECRET")
+        println("   - O archivo: ${localPropsFile.absolutePath}")
+        return defaultSecret
+    }
+
     private fun deriveKey(): SecretKey {
-        val secret = System.getenv("APP_SECRET") ?: throw IllegalStateException("APP_SECRET no definida")
+        val secret = getAppSecret()
         val spec = PBEKeySpec(secret.toCharArray(), "fixed_salt".toByteArray(), 10000, 256)
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val bytes = factory.generateSecret(spec).encoded
@@ -56,15 +77,12 @@ class DesktopSecureStorage : SecureStorage {
         val key = deriveKey()
         prefs.put(keyToken, encrypt(auth.token, key))
         prefs.put(keyRol, encrypt(auth.rol, key))
-        prefs.put(keyIdUsuario, encrypt(auth.idUsuario as String?, key))
-        prefs.put(keyIdCentro, encrypt(auth.idCentro as String?, key))
+        prefs.put(keyIdUsuario, encrypt(auth.idUsuario?.toString(), key))
+        prefs.put(keyIdCentro, encrypt(auth.idCentro?.toString(), key))
 
         auth.expiresIn?.let {raw ->
-            val secs = when (raw) {
-                is Number -> raw.toLong()
-                is String -> raw.toLongOrNull() ?: return@let
-                else -> return@let
-            }
+            val secsString = raw.toString()
+            val secs = secsString.toLongOrNull() ?: return@let
             val expiresAtMillis = System.currentTimeMillis() + secs * 1000L
             prefs.put(keyExpiresIn, encrypt(expiresAtMillis.toString(), key))
         }

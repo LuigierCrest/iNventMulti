@@ -1,7 +1,9 @@
 package com.luigiercrest.data.di
 
 import com.luigiercrest.data.database.datasource.ApiConnection
+import com.luigiercrest.data.repository.HomeRepositoryImp
 import com.luigiercrest.data.repository.LoginRepositoryImp
+import com.luigiercrest.domain.repository.HomeRepository
 import com.luigiercrest.domain.repository.LoginRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -44,5 +46,9 @@ val dataModule = module {
 
     single <LoginRepository> {
         LoginRepositoryImp(get<ApiConnection>())
+    }
+
+    single < HomeRepository>{
+        HomeRepositoryImp(get<ApiConnection>())
     }
 }
