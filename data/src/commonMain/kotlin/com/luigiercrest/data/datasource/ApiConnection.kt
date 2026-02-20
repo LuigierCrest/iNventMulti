@@ -11,7 +11,6 @@ import com.luigiercrest.data.dto.LoginResponseDTO
 import com.luigiercrest.data.dto.ProveedorDTO
 import com.luigiercrest.data.dto.ServicioTecnicoDTO
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.headers

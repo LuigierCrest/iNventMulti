@@ -4,7 +4,6 @@ import com.luigiercrest.data.database.datasource.ApiConnection
 import com.luigiercrest.data.mappers.CentroResponseMapper
 import com.luigiercrest.domain.models.CentroResponseModel
 import com.luigiercrest.domain.repository.HomeRepository
-import kotlin.collections.emptyMap
 
 class HomeRepositoryImp (private val connection: ApiConnection) : HomeRepository {
     override suspend fun getCentroHome(

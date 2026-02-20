@@ -3,7 +3,6 @@ package com.luigiercrest.presentation.category
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luigiercrest.domain.usecase.CategoryUseCase
-import com.luigiercrest.presentation.home.HomeUIState
 import com.luigiercrest.presentation.security.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

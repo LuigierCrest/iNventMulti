@@ -1,18 +1,5 @@
 package com.luigiercrest.inventmulti.models
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CarRepair
-import androidx.compose.material.icons.filled.CardGiftcard
-import androidx.compose.material.icons.filled.Devices
-import androidx.compose.material.icons.filled.GifBox
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Report
-import androidx.compose.material.icons.filled.School
-import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 @Serializable
