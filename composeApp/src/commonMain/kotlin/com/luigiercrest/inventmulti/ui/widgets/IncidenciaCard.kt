@@ -10,33 +10,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.remember
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.inventmulti.models.CategoryModel
+import com.luigiercrest.data.dto.IncidenciaDTO
+import com.luigiercrest.domain.models.IncidenciaResponseModel
 import com.luigiercrest.inventmulti.utils.CategoryIconMapper
 
 @Composable
-fun CategoryCard(
-    category: CategoryModel,
-    onCategoryClick: (CategoryModel) -> Unit,
+fun IncidenciaCard(
+    incidencia: IncidenciaResponseModel,
+    categoryId: Int = 7,
+    //onIncidenciaClick: (IncidenciaDTO) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(
-                onClick = { onCategoryClick(category) },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = LocalIndication.current
-            )
+//            .clickable(
+//                onClick = {onIncidenciaClick(incidencia) },
+//                interactionSource = remember { MutableInteractionSource() },
+//                indication = LocalIndication.current
+//            )
     ) {
         Row(
             modifier = Modifier
@@ -44,31 +46,40 @@ fun CategoryCard(
                 .padding(12.dp)
         ) {
             Surface(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(60.dp),
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
-                    imageVector = CategoryIconMapper.getIcon(category.idCategoria), // Cambia por el icono deseado
-                    contentDescription = category.categoria,
+                    imageVector = CategoryIconMapper.getIcon(categoryId),
+                    contentDescription = "Incidencia",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(6.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
             Spacer(modifier = Modifier.size(12.dp))
             Column {
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = category.categoria,
+                    text = incidencia.idDispositivo.toString(),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = category.descripcion,
+                    text = "Inicio: " + incidencia.fechaReporte,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = incidencia.estado ?: "Sin estado",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
         }
     }
+
+
 }

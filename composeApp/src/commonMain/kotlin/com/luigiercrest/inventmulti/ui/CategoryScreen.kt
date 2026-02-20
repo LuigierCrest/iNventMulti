@@ -1,14 +1,17 @@
 package com.luigiercrest.inventmulti.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,17 +21,40 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.models.CategoryModel
+import com.luigiercrest.inventmulti.ui.widgets.AsignacionCard
+import com.luigiercrest.inventmulti.ui.widgets.CentroCard
+import com.luigiercrest.inventmulti.ui.widgets.DispositivoCard
+import com.luigiercrest.inventmulti.ui.widgets.IncidenciaCard
+import com.luigiercrest.inventmulti.ui.widgets.ProveedorCard
+import com.luigiercrest.inventmulti.ui.widgets.ServicioTecnicoCard
+import com.luigiercrest.inventmulti.ui.widgets.UsuarioCard
+import com.luigiercrest.presentation.category.CategoryViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.text.get
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
     category: CategoryModel,
+    viewModel: CategoryViewModel = koinViewModel(),
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(category.idCategoria) {
+        viewModel.setCategoryId(category.idCategoria)
+    }
+
     Screen {
         Scaffold(
             topBar = {
@@ -36,7 +62,7 @@ fun CategoryScreen(
                     title = { Text(category.categoria) },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                     navigationIcon = {
-                        IconButton(onClick = {onBackClick()}) {
+                        IconButton(onClick = { onBackClick() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = "Volver"
@@ -46,23 +72,54 @@ fun CategoryScreen(
                 )
             },
             modifier = modifier
-        ){ padding ->
+        ) { padding ->
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(padding),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                //Tareas que recoge de la categoría seleccionada en la pantalla principal y las muestra según el rol.
-                item {
-                    Text("Categoría: ${category.categoria}")
-                    Text("Descripción: ${category.descripcion}")
-                    Text("Lista:")
+
+                // Mostrar items según la categoría
+                when (category.idCategoria) {
+                    1 -> items(state.centros) { centro ->
+                        CentroCard(centro = centro)
+                    }
+
+                    2 -> items(state.proveedores) { proveedor ->
+                        ProveedorCard(proveedor = proveedor)
+                    }
+
+                    3 -> items(state.servicios) { servicioTecnico ->
+                        ServicioTecnicoCard(servicioTecnico = servicioTecnico)
+                    }
+
+                    4 -> items(state.asignaciones) { asignacion ->
+                        AsignacionCard(asignacion = asignacion)
+                    }
+
+                    5, 8 -> items(state.usuarios) { usuario ->
+                        UsuarioCard(usuario = usuario)
+                    }
+
+                    6, 9 -> items(state.dispositivos) { dispositivo ->
+                        DispositivoCard(dispositivo = dispositivo)
+                    }
+
+                    7, 10 -> items(state.incidencias) { incidencia ->
+                        IncidenciaCard(incidencia = incidencia)
+                    }
+
                 }
 
-
             }
+
+
+
+
         }
     }
 
 }
+

@@ -39,10 +39,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onCategoryClick: (CategoryModel) -> Unit,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     var menuExpanded by remember { mutableStateOf(false) }
     val rol = viewModel.rol.collectAsState()
     val categorias = RoleCategories.getCategoriesByRole(rol.value)
+
+    // Bloquea el botón de retroceso del sistema
+    // BackHandler(enabled = true) {}
 
     Screen {
         Scaffold(
@@ -83,8 +87,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                // Crear una clase con las categorías que deben aparecer según el rol
-                //val listaCategorias = MutableList<String>
+                // Hay una clase modelo con las categorías que deben aparecer según el rol
                 item {
                     val state = viewModel.state.collectAsState()
                     val centro = state.value.centro

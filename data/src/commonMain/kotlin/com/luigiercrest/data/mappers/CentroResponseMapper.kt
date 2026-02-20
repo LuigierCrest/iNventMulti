@@ -13,6 +13,5 @@ object CentroResponseMapper {
             municipio = centroDTO.municipio,
             statusCode = status
         )
-
     }
 }

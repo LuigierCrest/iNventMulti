@@ -1,10 +1,14 @@
 package com.luigiercrest.data.dto
 
+import kotlinx.serialization.Serializable
+
+
+@Serializable
 data class ProveedorDTO(
     val idProveedor: Int,
     val nombre: String,
-    val direccion: String,
-    val telefono: Int,
-    val email: String
+    val direccion: String?,
+    val telefono: Int?,
+    val email: String?
 ) {
 }

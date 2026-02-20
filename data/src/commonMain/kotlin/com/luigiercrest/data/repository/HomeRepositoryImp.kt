@@ -14,6 +14,7 @@ class HomeRepositoryImp (private val connection: ApiConnection) : HomeRepository
         return try {
             val netResult = connection.getCentroHome(idCentro, token)
             if (netResult.isFailure) {
+                println("LOG- Error en getCentroHome en llamada a al API: ${netResult.exceptionOrNull()}")
                 return Result.failure(netResult.exceptionOrNull()!!)
             }
             val network = netResult.getOrNull()!!
@@ -21,7 +22,7 @@ class HomeRepositoryImp (private val connection: ApiConnection) : HomeRepository
                 val model = CentroResponseMapper.toDomain(network.body, network.status)
                 Result.success(model)
             } else {
-                val msg = "HTTP ${network.status}: ${network.rawBody ?: "Sin cuerpo"}"
+                val msg = "HTTP ${network.status}: ${network.rawBody} Sin cuerpo"
                 Result.failure(Exception(msg))
             }
         } catch (e: Exception) {
