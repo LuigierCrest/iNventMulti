@@ -19,12 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.domain.models.DispositivoResponseModel
-import com.luigiercrest.inventmulti.utils.CategoryIconMapper
+import com.luigiercrest.inventmulti.utils.DeviceTypeIconMapper
 
 @Composable
 fun DispositivoCard(
     dispositivo: DispositivoResponseModel,
-    categoryId: Int = 6,
     //onDispositivoClick: (DispositivoDTO) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,7 +48,7 @@ fun DispositivoCard(
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
-                    imageVector = CategoryIconMapper.getIcon(categoryId),
+                    imageVector = DeviceTypeIconMapper.getIcon(dispositivo.categoria),
                     contentDescription = "Dispositivo",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -72,7 +71,7 @@ fun DispositivoCard(
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = "Actualizado: "+dispositivo.ultimaActualizacion ?: "Sin fecha",
+                    text = "Actualizado: "+ (dispositivo.ultimaActualizacion ?: "Sin fecha"),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.size(4.dp))
