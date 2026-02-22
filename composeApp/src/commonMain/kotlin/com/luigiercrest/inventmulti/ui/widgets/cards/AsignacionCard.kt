@@ -3,6 +3,7 @@ package com.luigiercrest.inventmulti.ui.widgets.cards
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +18,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.data.dto.AsignacionDTO
 import com.luigiercrest.domain.models.AsignacionResponseModel
@@ -43,8 +46,10 @@ fun AsignacionCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // icono a la izquierda
             Surface(
                 modifier = Modifier.size(60.dp),
                 shape = RoundedCornerShape(8.dp),
@@ -59,9 +64,10 @@ fun AsignacionCard(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            // Centro y fecha de entrega
 
             Spacer(modifier = Modifier.size(12.dp))
-            Column {
+            Column (modifier = Modifier.weight(1f)) {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = asignacion.idCentro.toString(),
@@ -72,6 +78,25 @@ fun AsignacionCard(
                     text = asignacion.entrega?: "Sin entrega",
                     style = MaterialTheme.typography.bodySmall
                 )
+            }
+            Spacer(modifier = Modifier.size(12.dp))
+
+            // Número de asignación a la derecha
+            Surface(
+                modifier = Modifier.size(60.dp),
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = asignacion.idAsignacion.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

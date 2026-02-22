@@ -73,8 +73,8 @@ fun DetailScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(16.dp),
+                        .height(180.dp)
+                        .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     // Selección del icono de la categoría o del tipo de dispositivo
@@ -93,11 +93,10 @@ fun DetailScreen(
                         contentDescription = "Detalles",
                         modifier = Modifier
                             .size(120.dp)
-                            .padding(16.dp),
+                            .padding(8.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
 
-                    Spacer(modifier = Modifier.size(16.dp))
 
 
                     // Botón redondo de retroceso, solo visible en pantalla completa
@@ -131,9 +130,9 @@ fun DetailScreen(
                         2 -> state.proveedor?.let { ProveedorDetails(it) }
                         3 -> state.servicio?.let { ServicioTecnicoDetails(it) }
                         4 -> state.asignacion?.let { AsignacionDetails(it) }
-                        5, 8 -> state.usuario?.let { UsuarioDetails(it) }
-                        6, 9 -> state.dispositivo?.let { DispositivoDetails(it) }
-                        7, 10 -> state.incidencia?.let { IncidenciaDetails(it) }
+                        5, 8 -> state.usuario?.let { UsuarioDetails(it, categoryId)}
+                        6, 9 -> state.dispositivo?.let { DispositivoDetails(it, categoryId)}
+                        7, 10 -> state.incidencia?.let { IncidenciaDetails(it, categoryId) }
                     }
                 }
             }

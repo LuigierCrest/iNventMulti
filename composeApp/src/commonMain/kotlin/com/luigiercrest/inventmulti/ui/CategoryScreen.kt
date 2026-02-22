@@ -10,9 +10,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -117,121 +122,163 @@ fun CategoryScreen(
                     }
                 }
             },
+            // FAB nuevo elemento
+            floatingActionButton = {
+                Column (
+                    horizontalAlignment = androidx.compose.ui.Alignment.End,
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+
+                ) {
+                    // FAB de código de barras solo para categorías 6 y 9
+                    if (category.idCategoria == 6 || category.idCategoria == 9) {
+                        FloatingActionButton(
+                            onClick = { /* TODO: lógica de escanear código de barras */ },
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.QrCodeScanner,
+                                contentDescription = "Escanear código de barras"
+                            )
+                        }
+                    }
+
+                    if (category.idCategoria != 7 && category.idCategoria != 10) {
+                        FloatingActionButton(
+                            onClick = { /* TODO: lógica de añadir */ },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Añadir"
+                            )
+                        }
+                    }
+                }
+
+
+            },
             modifier = modifier.fillMaxSize()
         ) { padding ->
-            Column (
-                modifier = Modifier.fillMaxWidth().padding(padding)
+            PullToRefreshBox(
+                isRefreshing = state.isLoading,
+                onRefresh = { viewModel.setCategoryId(category.idCategoria)},
+                modifier = Modifier.fillMaxSize()
             ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                Column (
+                    modifier = Modifier.fillMaxWidth().padding(padding)
                 ) {
-                    val query = searchQuery.normalize()
-                    // Mostrar items según la categoría y la búsqueda
-                    when (category.idCategoria) {
-                        1 -> {
-                            val filtered = if (query.isBlank()) state.centros else state.centros.filter {
-                                "${it.tipo} ${it.nombre} ${it.idCentro} ${it.municipio}".normalize().contains(query)
-                            }
-                            items(filtered) { centro ->
-                                CentroCard(
-                                    centro = centro,
-                                    onCentroClick = { selectedCentro ->
-                                        onItemClick(category.idCategoria, selectedCentro)}
-                                )
-                            }
-                        }
-
-                        2 -> {
-                            val filtered = if (query.isBlank()) state.proveedores else state.proveedores.filter {
-                                "${it.nombre} ${it.direccion}".normalize().contains(query)
-                            }
-                            items(filtered) { proveedor ->
-                                ProveedorCard(
-                                    proveedor = proveedor,
-                                    onProveedorClick = { selectedProveedor ->
-                                        onItemClick(category.idCategoria, selectedProveedor)
-                                    }
-                                )
-                            }
-                        }
-
-                        3 -> {
-                            val filtered = if (query.isBlank()) state.servicios else state.servicios.filter {
-                                "${it.nombre} ${it.direccion}".normalize().contains(query)
-                            }
-                            items(filtered) { servicioTecnico ->
-                                ServicioTecnicoCard(
-                                    servicioTecnico = servicioTecnico,
-                                    onServicioTecnicoClick = { selectedServicioTecnico ->
-                                        onItemClick(category.idCategoria, selectedServicioTecnico)
-                                    }
-                                )
-                            }
-                        }
-
-                        4 -> {
-                            val filtered = if (query.isBlank()) state.asignaciones else state.asignaciones.filter {
-                                "${it.idAsignacion} ${it.entrega} ${it.idCentro}".normalize().contains(query)
-                            }
-                            items(filtered) { asignacion ->
-                                AsignacionCard(
-                                    asignacion = asignacion,
-                                    onAsignacionClick = { selectedAsignacion ->
-                                        onItemClick(category.idCategoria, selectedAsignacion)
-                                    }
-                                )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        val query = searchQuery.normalize()
+                        // Mostrar items según la categoría y la búsqueda
+                        when (category.idCategoria) {
+                            1 -> {
+                                val filtered = if (query.isBlank()) state.centros else state.centros.filter {
+                                    "${it.tipo} ${it.nombre} ${it.idCentro} ${it.municipio}".normalize().contains(query)
+                                }
+                                items(filtered) { centro ->
+                                    CentroCard(
+                                        centro = centro,
+                                        onCentroClick = { selectedCentro ->
+                                            onItemClick(category.idCategoria, selectedCentro)}
+                                    )
+                                }
                             }
 
-                        }
+                            2 -> {
+                                val filtered = if (query.isBlank()) state.proveedores else state.proveedores.filter {
+                                    "${it.nombre} ${it.direccion}".normalize().contains(query)
+                                }
+                                items(filtered) { proveedor ->
+                                    ProveedorCard(
+                                        proveedor = proveedor,
+                                        onProveedorClick = { selectedProveedor ->
+                                            onItemClick(category.idCategoria, selectedProveedor)
+                                        }
+                                    )
+                                }
+                            }
 
-                        5, 8 -> {
-                            val filtered = if (query.isBlank()) state.usuarios else state.usuarios.filter {
-                                "${it.nombre} ${it.apellidos} ${it.dni} ${it.rol} ${it.idCentro} ${it.departamento}".normalize().contains(query)
+                            3 -> {
+                                val filtered = if (query.isBlank()) state.servicios else state.servicios.filter {
+                                    "${it.nombre} ${it.direccion}".normalize().contains(query)
+                                }
+                                items(filtered) { servicioTecnico ->
+                                    ServicioTecnicoCard(
+                                        servicioTecnico = servicioTecnico,
+                                        onServicioTecnicoClick = { selectedServicioTecnico ->
+                                            onItemClick(category.idCategoria, selectedServicioTecnico)
+                                        }
+                                    )
+                                }
                             }
-                            items(filtered) { usuario ->
-                                UsuarioCard(
-                                    usuario = usuario,
-                                    onUsuarioClick = { selectedUsuario ->
-                                        onItemClick(category.idCategoria, selectedUsuario)
-                                    }
-                                )
-                            }
-                        }
 
-                        6, 9 -> {
-                            val filtered = if (query.isBlank()) state.dispositivos else state.dispositivos.filter {
-                                "${it.idDispositivo} ${it.idCentro} ${it.nombre} ${it.numSerie} ${it.marcaModelo} ${it.ultimaActualizacion} ${it.observaciones} ${it.categoria} ${it.estado} ${it.uso} ${it.ubicacion} ${it.idAsignacion}".normalize().contains(query)
-                            }
-                            items(filtered) { dispositivo ->
-                                DispositivoCard(
-                                    dispositivo = dispositivo,
-                                    onDispositivoClick = { selectedDispositivo ->
-                                        println("LOG - Dispositivo seleccionado: ${selectedDispositivo.categoria}")
-                                        onItemClick(category.idCategoria, selectedDispositivo)
-                                    }
-                                )
-                            }
-                        }
+                            4 -> {
+                                val filtered = if (query.isBlank()) state.asignaciones else state.asignaciones.filter {
+                                    "${it.idAsignacion} ${it.entrega} ${it.idCentro}".normalize().contains(query)
+                                }
+                                items(filtered) { asignacion ->
+                                    AsignacionCard(
+                                        asignacion = asignacion,
+                                        onAsignacionClick = { selectedAsignacion ->
+                                            onItemClick(category.idCategoria, selectedAsignacion)
+                                        }
+                                    )
+                                }
 
-                        7, 10 -> {
-                            val filtered = if (query.isBlank()) state.incidencias else state.incidencias.filter {
-                                "${it.idIncidencia} ${it.idCentro} ${it.idDispositivo} ${it.dniResponsable} ${it.descripcion} ${it.fechaReporte} ${it.fechaCierre} ${it.estado}".normalize().contains(query)
                             }
-                            items(filtered) { incidencia ->
-                                IncidenciaCard(
-                                    incidencia = incidencia,
-                                    onIncidenciaClick = { selectedIncidencia ->
-                                        onItemClick(category.idCategoria, selectedIncidencia)
-                                    }
-                                )
+
+                            5, 8 -> {
+                                val filtered = if (query.isBlank()) state.usuarios else state.usuarios.filter {
+                                    "${it.nombre} ${it.apellidos} ${it.dni} ${it.rol} ${it.idCentro} ${it.departamento}".normalize().contains(query)
+                                }
+                                items(filtered) { usuario ->
+                                    UsuarioCard(
+                                        usuario = usuario,
+                                        onUsuarioClick = { selectedUsuario ->
+                                            onItemClick(category.idCategoria, selectedUsuario)
+                                        }
+                                    )
+                                }
                             }
+
+                            6, 9 -> {
+                                val filtered = if (query.isBlank()) state.dispositivos else state.dispositivos.filter {
+                                    "${it.idDispositivo} ${it.idCentro} ${it.nombre} ${it.numSerie} ${it.marcaModelo} ${it.ultimaActualizacion} ${it.observaciones} ${it.categoria} ${it.estado} ${it.uso} ${it.ubicacion} ${it.idAsignacion}".normalize().contains(query)
+                                }
+                                items(filtered) { dispositivo ->
+                                    DispositivoCard(
+                                        dispositivo = dispositivo,
+                                        onDispositivoClick = { selectedDispositivo ->
+                                            println("LOG - Dispositivo seleccionado: ${selectedDispositivo.categoria}")
+                                            onItemClick(category.idCategoria, selectedDispositivo)
+                                        }
+                                    )
+                                }
+                            }
+
+                            7, 10 -> {
+                                val filtered = if (query.isBlank()) state.incidencias else state.incidencias.filter {
+                                    "${it.idIncidencia} ${it.idCentro} ${it.idDispositivo} ${it.dniResponsable} ${it.descripcion} ${it.fechaReporte} ${it.fechaCierre} ${it.estado}".normalize().contains(query)
+                                }
+                                items(filtered) { incidencia ->
+                                    IncidenciaCard(
+                                        incidencia = incidencia,
+                                        onIncidenciaClick = { selectedIncidencia ->
+                                            onItemClick(category.idCategoria, selectedIncidencia)
+                                        }
+                                    )
+                                }
+                            }
+
                         }
 
                     }
-
                 }
             }
-
         }
     }
 
