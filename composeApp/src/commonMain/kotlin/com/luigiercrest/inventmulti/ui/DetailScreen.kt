@@ -19,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,13 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.domain.models.AsignacionResponseModel
-import com.luigiercrest.domain.models.CentroResponseModel
 import com.luigiercrest.domain.models.DispositivoResponseModel
-import com.luigiercrest.domain.models.IncidenciaResponseModel
-import com.luigiercrest.domain.models.ProveedorResponseModel
-import com.luigiercrest.domain.models.ServicioTecnicoResponseModel
-import com.luigiercrest.domain.models.UsuarioResponseModel
 import com.luigiercrest.inventmulti.ui.details.AsignacionDetails
 import com.luigiercrest.inventmulti.ui.details.CentroDetails
 import com.luigiercrest.inventmulti.ui.details.DispositivoDetails
@@ -84,7 +77,7 @@ fun DetailScreen(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Lógica para seleccionar el icono correcto
+                    // Selección del icono de la categoría o del tipo de dispositivo
 
                     println("LOG - Detail CategoryId: $categoryId")
                     val icon: ImageVector =
@@ -151,15 +144,15 @@ fun DetailScreen(
 
 
 }
-
-@Composable
-private fun getTitleFromItem(item: Any?): String = when (item) {
-    is CentroResponseModel -> "${item.tipo} ${item.nombre}"
-    is ProveedorResponseModel -> item.nombre ?: "Proveedor"
-    is ServicioTecnicoResponseModel -> item.nombre ?: "Servicio Técnico"
-    is AsignacionResponseModel -> "Asignación ${item.idAsignacion}"
-    is UsuarioResponseModel -> "${item.nombre} ${item.apellidos}"
-    is DispositivoResponseModel -> "Dispositivo ${item.idDispositivo}"
-    is IncidenciaResponseModel -> "Incidencia ${item.idIncidencia}"
-    else -> "Detalles"
-}
+//
+//@Composable
+//private fun getTitleFromItem(item: Any?): String = when (item) {
+//    is CentroResponseModel -> "${item.tipo} ${item.nombre}"
+//    is ProveedorResponseModel -> item.nombre ?: "Proveedor"
+//    is ServicioTecnicoResponseModel -> item.nombre ?: "Servicio Técnico"
+//    is AsignacionResponseModel -> "Asignación ${item.idAsignacion}"
+//    is UsuarioResponseModel -> "${item.nombre} ${item.apellidos}"
+//    is DispositivoResponseModel -> "Dispositivo ${item.idDispositivo}"
+//    is IncidenciaResponseModel -> "Incidencia ${item.idIncidencia}"
+//    else -> "Detalles"
+//}

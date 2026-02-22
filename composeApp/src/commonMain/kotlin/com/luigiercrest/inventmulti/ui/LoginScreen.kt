@@ -49,8 +49,6 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 
-
-
 @Composable
 fun LoginScreen(
     backStack: NavBackStack<NavKey>,
@@ -60,19 +58,25 @@ fun LoginScreen(
 
     val dniState = viewModel.dni.collectAsState()
     val dniValue = dniState.value
-    val isDniValid = remember(dniValue) {isValidDni(dniValue)}
+    val isDniValid = remember(dniValue) { isValidDni(dniValue) }
     val passwd = viewModel.password.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
 
     val isPasswordError = dniValue.isNotEmpty() && isDniValid && passwd.value.isEmpty()
 
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         viewModel.navigationState.collectLatest {
-            when(it){
-                is AuthNavigation.ToHome -> backStack.add(NavRoutes.Home)
+            when (it) {
+                is AuthNavigation.ToHome -> {
+                    while (backStack.isNotEmpty()) {
+                        backStack.removeLast()
+                    }
+                    backStack.add(NavRoutes.Home)
+                }
                 else -> {}
             }
+
         }
     }
 
@@ -178,13 +182,11 @@ fun LoginScreen(
         }
     }
 
-
-
 }
 
 fun isValidDni(dniValue: String): Boolean {
     val dniToValidate = dniValue.trim().uppercase()
-    if (dniToValidate.length !=  9) return false
+    if (dniToValidate.length != 9) return false
     val letras = "TRWAGMYFPDXBNJZSQVHLCKE"
     // Control primer dígito del NIE
     val numeros = when (dniToValidate[0]) {
@@ -201,9 +203,10 @@ fun isValidDni(dniValue: String): Boolean {
 }
 
 
-private fun checkUserAndPassword(dni: String, passwd: String, viewModel: LoginViewModel)  {
-    // -------------DEPRECATED___________________________________________
-    // Antes de esta función se valida que la información aportada es coherente.
+private fun checkUserAndPassword(dni: String, passwd: String, viewModel: LoginViewModel) {
+    // ------------------------------------------------------------------------
+    // Esta función comprueba los datos, pero está obsoleta, solo para desarrollo.
+
     if (dni.isEmpty()) {
         println("El DNI/NIE no puede estar vacío")
         return

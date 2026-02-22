@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,9 +45,6 @@ fun HomeScreen(
     val rol = viewModel.rol.collectAsState()
     val categorias = RoleCategories.getCategoriesByRole(rol.value)
 
-    // Bloquea el botón de retroceso del sistema
-    // BackHandler(enabled = true) {}
-
     Screen {
         Scaffold(
             topBar = {
@@ -58,7 +55,8 @@ fun HomeScreen(
                     actions = {
                         IconButton(onClick = { menuExpanded = !menuExpanded }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert, contentDescription = "Menú"
+                                imageVector = Icons.Default.Menu, contentDescription = "Menú",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         DropdownMenu(

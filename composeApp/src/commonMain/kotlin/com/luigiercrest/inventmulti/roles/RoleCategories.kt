@@ -25,7 +25,7 @@ val listAdminCategories = listOf(
 )
 
 val listDireCategories = listOf(
-    // los id de categoría son diferentes, ya que el rol director y responsable solo pueden acceder a la sección de exclusiva de su centro
+    // los id de categoría son diferentes, ya que el rol director y responsable solo pueden acceder a la sección exclusiva de su centro, incluso tienen endpoints diferentes para sus roles
 
     CategoryModel(8, "Usuarios", "Gestión de usuarios del centro", "usuarios"),
     CategoryModel(9, "Dispositivos", "Gestión de dispositivos del centro", "dispositivos"),
