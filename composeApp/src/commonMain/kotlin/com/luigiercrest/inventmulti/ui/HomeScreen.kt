@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.models.CategoryModel
 import com.luigiercrest.inventmulti.roles.RoleCategories
-import com.luigiercrest.inventmulti.ui.widgets.CategoryCard
+import com.luigiercrest.inventmulti.ui.widgets.cards.CategoryCard
 import com.luigiercrest.presentation.home.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 

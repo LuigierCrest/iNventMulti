@@ -1,8 +1,8 @@
-package com.luigiercrest.inventmulti.ui.widgets
+package com.luigiercrest.inventmulti.ui.widgets.cards
 
-//import androidx.compose.foundation.LocalIndication
-//import androidx.compose.foundation.clickable
-//import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,27 +16,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.domain.models.CentroResponseModel
-import com.luigiercrest.inventmulti.utils.CategoryIconMapper
+import com.luigiercrest.domain.models.DispositivoResponseModel
+import com.luigiercrest.inventmulti.utils.DeviceIconMapper
 
 @Composable
-fun CentroCard(
-    centro: CentroResponseModel,
-    categoryId: Int = 1,
-    //onCentroClick: (CentroDTO) -> Unit,
+fun DispositivoCard(
+    dispositivo: DispositivoResponseModel,
+    onDispositivoClick: (DispositivoResponseModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-//            .clickable(
-//                onClick = {onCentroClick(centro) },
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = LocalIndication.current
-//            )
+            .clickable(
+                onClick = {onDispositivoClick(dispositivo) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = LocalIndication.current
+            )
     ) {
         Row(
             modifier = Modifier
@@ -49,8 +49,8 @@ fun CentroCard(
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
-                    imageVector = CategoryIconMapper.getIcon(categoryId),
-                    contentDescription = "Centro",
+                    imageVector = DeviceIconMapper.getIcon(dispositivo.categoria),
+                    contentDescription = "Dispositivo",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(6.dp),
@@ -62,17 +62,27 @@ fun CentroCard(
             Column {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = centro.idCentro.toString(),
+                    text = dispositivo.idDispositivo.toString(),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = centro.tipo+ " " + centro.nombre,
+                    text = dispositivo.categoria ?: "Sin categoría",
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = centro.municipio ?: "Sin municipio",
+                    text = "Actualizado: "+ (dispositivo.ultimaActualizacion ?: "Sin fecha"),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = dispositivo.ubicacion ?: "Sin ubicación",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = dispositivo.estado ?: "Sin estado",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

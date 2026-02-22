@@ -1,8 +1,8 @@
-package com.luigiercrest.inventmulti.ui.widgets
+package com.luigiercrest.inventmulti.ui.widgets.cards
 
-//import androidx.compose.foundation.LocalIndication
-//import androidx.compose.foundation.clickable
-//import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,26 +16,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.domain.models.DispositivoResponseModel
-import com.luigiercrest.inventmulti.utils.DeviceTypeIconMapper
+import com.luigiercrest.data.dto.ProveedorDTO
+import com.luigiercrest.domain.models.ProveedorResponseModel
+import com.luigiercrest.inventmulti.utils.CategoryIconMapper
 
 @Composable
-fun DispositivoCard(
-    dispositivo: DispositivoResponseModel,
-    //onDispositivoClick: (DispositivoDTO) -> Unit,
+fun ProveedorCard(
+    proveedor: ProveedorResponseModel,
+    categoryId: Int = 2,
+    onProveedorClick: (ProveedorResponseModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-//            .clickable(
-//                onClick = {onDispositivoClick(dispositivo) },
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = LocalIndication.current
-//            )
+            .clickable(
+                onClick = {onProveedorClick(proveedor) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = LocalIndication.current
+            )
     ) {
         Row(
             modifier = Modifier
@@ -48,8 +51,8 @@ fun DispositivoCard(
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
-                    imageVector = DeviceTypeIconMapper.getIcon(dispositivo.categoria),
-                    contentDescription = "Dispositivo",
+                    imageVector = CategoryIconMapper.getIcon(categoryId),
+                    contentDescription = "Proveedor",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(6.dp),
@@ -61,27 +64,12 @@ fun DispositivoCard(
             Column {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = dispositivo.idDispositivo.toString(),
+                    text = proveedor.nombre ?: "Sin nombre",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = dispositivo.categoria ?: "Sin categoría",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = "Actualizado: "+ (dispositivo.ultimaActualizacion ?: "Sin fecha"),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = dispositivo.ubicacion ?: "Sin ubicación",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = dispositivo.estado ?: "Sin estado",
+                    text = proveedor.direccion ?: "Sin dirección",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

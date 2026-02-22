@@ -15,10 +15,11 @@ import androidx.compose.material.icons.filled.Scanner
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Tablet
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.ui.graphics.vector.ImageVector
 
-object DeviceTypeIconMapper {
+object DeviceIconMapper {
     fun getIcon(deviceType: String?): ImageVector {
         return when (deviceType?.trim()?.lowercase()) {
             "pdi/pim" -> Icons.Filled.DeveloperBoard
@@ -35,6 +36,7 @@ object DeviceTypeIconMapper {
             "redes" -> Icons.Filled.Router
             "carros" -> Icons.Filled.ShoppingCart
             "proyector" -> Icons.Filled.DeveloperMode
+            "tablet" -> Icons.Filled.Tablet
             else -> Icons.Filled.Devices
         }
     }

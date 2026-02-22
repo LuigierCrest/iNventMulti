@@ -1,5 +1,8 @@
-package com.luigiercrest.inventmulti.ui.widgets
+package com.luigiercrest.inventmulti.ui.widgets.cards
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,27 +16,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.domain.models.ProveedorResponseModel
+import com.luigiercrest.domain.models.IncidenciaResponseModel
 import com.luigiercrest.inventmulti.utils.CategoryIconMapper
 
 @Composable
-fun ProveedorCard(
-    proveedor: ProveedorResponseModel,
-    categoryId: Int = 2,
-//    onCentroClick: (ProveedorDTO) -> Unit,
+fun IncidenciaCard(
+    incidencia: IncidenciaResponseModel,
+    categoryId: Int = 7,
+    onIncidenciaClick: (IncidenciaResponseModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-//            .clickable(
-//                onClick = {onCentroClick(proveedor) },
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = LocalIndication.current
-//            )
+            .clickable(
+                onClick = {onIncidenciaClick(incidencia) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = LocalIndication.current
+            )
     ) {
         Row(
             modifier = Modifier
@@ -47,7 +51,7 @@ fun ProveedorCard(
             ) {
                 Icon(
                     imageVector = CategoryIconMapper.getIcon(categoryId),
-                    contentDescription = "Proveedor",
+                    contentDescription = "Incidencia",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(6.dp),
@@ -59,12 +63,17 @@ fun ProveedorCard(
             Column {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = proveedor.nombre ?: "Sin nombre",
+                    text = incidencia.idDispositivo.toString(),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = proveedor.direccion ?: "Sin dirección",
+                    text = "Inicio: " + incidencia.fechaReporte,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = incidencia.estado ?: "Sin estado",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

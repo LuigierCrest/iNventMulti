@@ -1,5 +1,8 @@
-package com.luigiercrest.inventmulti.ui.widgets
+package com.luigiercrest.inventmulti.ui.widgets.cards
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,27 +16,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luigiercrest.domain.models.ServicioTecnicoResponseModel
+import com.luigiercrest.domain.models.CentroResponseModel
 import com.luigiercrest.inventmulti.utils.CategoryIconMapper
 
 @Composable
-fun ServicioTecnicoCard(
-    servicioTecnico: ServicioTecnicoResponseModel,
-    categoryId: Int = 3,
-//    onServicioTecnicoClick: (ServicioTecnicoDTO) -> Unit,
-    modifier: Modifier = Modifier
+fun CentroCard(
+    centro: CentroResponseModel,
+    categoryId: Int = 1,
+    onCentroClick: (CentroResponseModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-//            .clickable(
-//                onClick = {onServicioTecnicoClick(servicioTecnico) },
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = LocalIndication.current
-//            )
+            .clickable(
+                onClick = {onCentroClick(centro) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = LocalIndication.current
+            )
     ) {
         Row(
             modifier = Modifier
@@ -47,7 +51,7 @@ fun ServicioTecnicoCard(
             ) {
                 Icon(
                     imageVector = CategoryIconMapper.getIcon(categoryId),
-                    contentDescription = "ServTécnico",
+                    contentDescription = "Centro",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(6.dp),
@@ -59,12 +63,17 @@ fun ServicioTecnicoCard(
             Column {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = servicioTecnico.nombre ?: "Sin nombre",
+                    text = centro.idCentro.toString(),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = servicioTecnico.direccion ?: "Sin dirección",
+                    text = centro.tipo+ " " + centro.nombre,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = centro.municipio ?: "Sin municipio",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

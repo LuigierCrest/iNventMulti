@@ -44,19 +44,19 @@ class HomeViewModel(private val homeUseCase: HomeUseCase, private val secureStor
             try {
                 val result= homeUseCase.getCentroHome(_idCentro.value, _token.value)
                 result.onSuccess { centroResponseModel ->
-                    println("LOG- getCentroHome Succces: ${centroResponseModel.nombre}")
+                    println("LOG - getCentroHome Succces: ${centroResponseModel.nombre}")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = null,
                         centro = centroResponseModel
                     )
                 }.onFailure {
-                    println("LOG- Error en getCentroHome: ${it.message}")
+                    println("LOG - Error en getCentroHome: ${it.message}")
                     _state.value = _state.value.copy(isLoading = false, error = it.message)
                 }
 
             } catch (e: Exception) {
-                println("LOG- Error en getCentroHome: ${e.message}")
+                println("LOG - Error en getCentroHome: ${e.message}")
             }
 
         }
