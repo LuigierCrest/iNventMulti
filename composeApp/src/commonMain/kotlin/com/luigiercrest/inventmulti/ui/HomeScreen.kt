@@ -39,10 +39,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onCategoryClick: (CategoryModel) -> Unit,
+    onAppInfoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val rol = viewModel.rol.collectAsState()
+    val idUsuario = viewModel.idUsuario.collectAsState()
     val categorias = RoleCategories.getCategoriesByRole(rol.value)
 
     Screen {
@@ -63,17 +65,19 @@ fun HomeScreen(
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }
                         ) {
-                            DropdownMenuItem(text = { Text("Cambiar contraseña") }, onClick = {
-                                // Acción para cambiar contraseña
+//                            DropdownMenuItem(text = { Text("Cambiar contraseña") }, onClick = {
+//                                // Acción para cambiar contraseña
+//                                menuExpanded = false
+//                            })
+//                            DropdownMenuItem(text = { Text("Logout") }, onClick = {
+//                                // Borra el token y sale a login
+//                                viewModel.logout()
+//                                menuExpanded = false
+//                            })
+                            DropdownMenuItem(text = { Text("APP-Info") }, onClick = {
+                                // Muestra la info de la APP
                                 menuExpanded = false
-                            })
-                            DropdownMenuItem(text = { Text("Logout") }, onClick = {
-                                // Acción para cambiar contraseña
-                                menuExpanded = false
-                            })
-                            DropdownMenuItem(text = { Text("Sobre la APP") }, onClick = {
-                                // Acción para mostrar info de la APP
-                                menuExpanded = false
+                                onAppInfoClick()
                             })
                         }
                     }

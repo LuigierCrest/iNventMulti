@@ -2,7 +2,6 @@ package com.luigiercrest.inventmulti.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -130,8 +129,8 @@ fun DetailScreen(
                         2 -> state.proveedor?.let { ProveedorDetails(it) }
                         3 -> state.servicio?.let { ServicioTecnicoDetails(it) }
                         4 -> state.asignacion?.let { AsignacionDetails(it) }
-                        5, 8 -> state.usuario?.let { UsuarioDetails(it, categoryId)}
-                        6, 9 -> state.dispositivo?.let { DispositivoDetails(it, categoryId)}
+                        5, 8 -> state.usuario?.let { UsuarioDetails(it, categoryId, viewModel, onBackClick)}
+                        6, 9 -> state.dispositivo?.let { DispositivoDetails(it, categoryId, viewModel, onBackClick)}
                         7, 10 -> state.incidencia?.let { IncidenciaDetails(it, categoryId) }
                     }
                 }
@@ -143,15 +142,4 @@ fun DetailScreen(
 
 
 }
-//
-//@Composable
-//private fun getTitleFromItem(item: Any?): String = when (item) {
-//    is CentroResponseModel -> "${item.tipo} ${item.nombre}"
-//    is ProveedorResponseModel -> item.nombre ?: "Proveedor"
-//    is ServicioTecnicoResponseModel -> item.nombre ?: "Servicio Técnico"
-//    is AsignacionResponseModel -> "Asignación ${item.idAsignacion}"
-//    is UsuarioResponseModel -> "${item.nombre} ${item.apellidos}"
-//    is DispositivoResponseModel -> "Dispositivo ${item.idDispositivo}"
-//    is IncidenciaResponseModel -> "Incidencia ${item.idIncidencia}"
-//    else -> "Detalles"
-//}
+

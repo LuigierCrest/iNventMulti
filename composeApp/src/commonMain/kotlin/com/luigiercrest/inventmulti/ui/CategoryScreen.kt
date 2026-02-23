@@ -1,6 +1,7 @@
 package com.luigiercrest.inventmulti.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.models.CategoryModel
+import com.luigiercrest.inventmulti.scanner.BarcodeScannerScreen
 import com.luigiercrest.inventmulti.ui.widgets.cards.AsignacionCard
 import com.luigiercrest.inventmulti.ui.widgets.cards.CentroCard
 import com.luigiercrest.inventmulti.ui.widgets.cards.DispositivoCard
@@ -52,6 +53,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CategoryScreen(
     category: CategoryModel,
     onItemClick: (Int, Any) -> Unit,
+    onCreateClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     viewModel: CategoryViewModel = koinViewModel(),
     modifier: Modifier = Modifier
@@ -60,10 +62,24 @@ fun CategoryScreen(
     val state by viewModel.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
-
+    var showScanner by remember { mutableStateOf(false) }
 
     LaunchedEffect(category.idCategoria) {
         viewModel.setCategoryId(category.idCategoria)
+    }
+
+    // Mostrar escáner a pantalla completa cuando se activa
+    if (showScanner) {
+        BarcodeScannerScreen(
+            onScanned = { code ->
+                searchQuery = code
+                showScanner = false
+            },
+            onCancelled = {
+                showScanner = false
+            }
+        )
+        return
     }
 
     Screen {
@@ -132,7 +148,7 @@ fun CategoryScreen(
                     // FAB de código de barras solo para categorías 6 y 9
                     if (category.idCategoria == 6 || category.idCategoria == 9) {
                         FloatingActionButton(
-                            onClick = { /* TODO: lógica de escanear código de barras */ },
+                            onClick = { showScanner = true },
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                         ) {
@@ -143,9 +159,10 @@ fun CategoryScreen(
                         }
                     }
 
-                    if (category.idCategoria != 7 && category.idCategoria != 10) {
+                    // FAB solo para nuevo usuario
+                    if (category.idCategoria == 5 || category.idCategoria == 8) {
                         FloatingActionButton(
-                            onClick = { /* TODO: lógica de añadir */ },
+                            onClick = { onCreateClick(category.idCategoria) },
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ) {

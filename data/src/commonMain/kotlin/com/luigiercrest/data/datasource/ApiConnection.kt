@@ -4,6 +4,7 @@ import com.luigiercrest.data.database.dto.UsuarioDTO
 import com.luigiercrest.data.datasource.NetworkResult
 import com.luigiercrest.data.dto.AsignacionDTO
 import com.luigiercrest.data.dto.CentroDTO
+import com.luigiercrest.data.dto.DeleteResponseDTO
 import com.luigiercrest.data.dto.DispositivoDTO
 import com.luigiercrest.data.dto.IncidenciaDTO
 import com.luigiercrest.data.dto.LoginDataDTO
@@ -12,6 +13,7 @@ import com.luigiercrest.data.dto.ProveedorDTO
 import com.luigiercrest.data.dto.ServicioTecnicoDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
@@ -57,10 +59,6 @@ class ApiConnection(private val httpClient: HttpClient) {
     val SERVICIOS_CENTRO_URL = "${RESP_URL}/serviciostecnicos"
 
 
-
-
-
-
     suspend fun login(loginData: LoginDataDTO): Result<NetworkResult<LoginResponseDTO>> {
         return try {
             val response: HttpResponse = httpClient.post(LOGIN_URL) {
@@ -95,9 +93,9 @@ class ApiConnection(private val httpClient: HttpClient) {
         }
     }
 
-    suspend fun getCentroHome (idCentro:String, token:String): Result<NetworkResult<CentroDTO>> {
+    suspend fun getCentroHome(idCentro: String, token: String): Result<NetworkResult<CentroDTO>> {
         return try {
-            val response: HttpResponse = httpClient.get(CENTROS_URL+"/${idCentro}") {
+            val response: HttpResponse = httpClient.get(CENTROS_URL + "/${idCentro}") {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
                 headers {
@@ -129,7 +127,7 @@ class ApiConnection(private val httpClient: HttpClient) {
         }
     }
 
-    suspend fun getCentros (token:String): Result<NetworkResult<List<CentroDTO>>> {
+    suspend fun getCentros(token: String): Result<NetworkResult<List<CentroDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(CENTROS_URL) {
                 contentType(ContentType.Application.Json)
@@ -161,7 +159,8 @@ class ApiConnection(private val httpClient: HttpClient) {
             Result.failure(e)
         }
     }
-    suspend fun getProveedores (token:String): Result<NetworkResult<List<ProveedorDTO>>> {
+
+    suspend fun getProveedores(token: String): Result<NetworkResult<List<ProveedorDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(PROVEEDORES_URL) {
                 contentType(ContentType.Application.Json)
@@ -177,23 +176,25 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<ProveedorDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<ProveedorDTO>>(body)
+            val result: Result<NetworkResult<List<ProveedorDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<ProveedorDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getServicios (token:String): Result<NetworkResult<List<ServicioTecnicoDTO>>> {
+
+    suspend fun getServicios(token: String): Result<NetworkResult<List<ServicioTecnicoDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(SERVICIOS_URL) {
                 contentType(ContentType.Application.Json)
@@ -209,23 +210,25 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<ServicioTecnicoDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<ServicioTecnicoDTO>>(body)
+            val result: Result<NetworkResult<List<ServicioTecnicoDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<ServicioTecnicoDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getAsignaciones (token:String): Result<NetworkResult<List<AsignacionDTO>>> {
+
+    suspend fun getAsignaciones(token: String): Result<NetworkResult<List<AsignacionDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(ASIGNACIONES_URL) {
                 contentType(ContentType.Application.Json)
@@ -241,23 +244,25 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<AsignacionDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<AsignacionDTO>>(body)
+            val result: Result<NetworkResult<List<AsignacionDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<AsignacionDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getUsuarios (token:String): Result<NetworkResult<List<UsuarioDTO>>> {
+
+    suspend fun getUsuarios(token: String): Result<NetworkResult<List<UsuarioDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(USUARIOS_URL) {
                 contentType(ContentType.Application.Json)
@@ -289,7 +294,8 @@ class ApiConnection(private val httpClient: HttpClient) {
             Result.failure(e)
         }
     }
-    suspend fun getDispositivos (token:String): Result<NetworkResult<List<DispositivoDTO>>> {
+
+    suspend fun getDispositivos(token: String): Result<NetworkResult<List<DispositivoDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(DISPOSITIVOS_URL) {
                 contentType(ContentType.Application.Json)
@@ -305,23 +311,25 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<DispositivoDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<DispositivoDTO>>(body)
+            val result: Result<NetworkResult<List<DispositivoDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<DispositivoDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getIncidencias (token:String): Result<NetworkResult<List<IncidenciaDTO>>> {
+
+    suspend fun getIncidencias(token: String): Result<NetworkResult<List<IncidenciaDTO>>> {
         return try {
             val response: HttpResponse = httpClient.get(INCIDENCIAS_URL) {
                 contentType(ContentType.Application.Json)
@@ -337,25 +345,30 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<IncidenciaDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<IncidenciaDTO>>(body)
+            val result: Result<NetworkResult<List<IncidenciaDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<IncidenciaDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getUsuariosCentro (token:String, idCentro:Int): Result<NetworkResult<List<UsuarioDTO>>> {
+
+    suspend fun getUsuariosCentro(
+        token: String,
+        idCentro: Int
+    ): Result<NetworkResult<List<UsuarioDTO>>> {
         return try {
-            val response: HttpResponse = httpClient.get(USUARIOS_CENTRO_URL+"/${idCentro}") {
+            val response: HttpResponse = httpClient.get(USUARIOS_CENTRO_URL + "/${idCentro}") {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
                 headers {
@@ -385,9 +398,13 @@ class ApiConnection(private val httpClient: HttpClient) {
             Result.failure(e)
         }
     }
-    suspend fun getDispositivosCentro (token:String, idCentro:Int): Result<NetworkResult<List<DispositivoDTO>>> {
+
+    suspend fun getDispositivosCentro(
+        token: String,
+        idCentro: Int
+    ): Result<NetworkResult<List<DispositivoDTO>>> {
         return try {
-            val response: HttpResponse = httpClient.get(DISPOSITIVOS_CENTRO_URL+"/${idCentro}") {
+            val response: HttpResponse = httpClient.get(DISPOSITIVOS_CENTRO_URL + "/${idCentro}") {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
                 headers {
@@ -401,25 +418,30 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<DispositivoDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<DispositivoDTO>>(body)
+            val result: Result<NetworkResult<List<DispositivoDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<DispositivoDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    suspend fun getIncidenciasCentro (token:String, idCentro:Int): Result<NetworkResult<List<IncidenciaDTO>>> {
+
+    suspend fun getIncidenciasCentro(
+        token: String,
+        idCentro: Int
+    ): Result<NetworkResult<List<IncidenciaDTO>>> {
         return try {
-            val response: HttpResponse = httpClient.get(INCIDENCIAS_CENTRO_URL+"/${idCentro}") {
+            val response: HttpResponse = httpClient.get(INCIDENCIAS_CENTRO_URL + "/${idCentro}") {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
                 headers {
@@ -433,16 +455,17 @@ class ApiConnection(private val httpClient: HttpClient) {
                 println(e.message)
                 null
             }
-            val result: Result<NetworkResult<List<IncidenciaDTO>>> = if (response.status.isSuccess()) {
-                val dto = if (!body.isNullOrEmpty()) {
-                    Json.decodeFromString<List<IncidenciaDTO>>(body)
+            val result: Result<NetworkResult<List<IncidenciaDTO>>> =
+                if (response.status.isSuccess()) {
+                    val dto = if (!body.isNullOrEmpty()) {
+                        Json.decodeFromString<List<IncidenciaDTO>>(body)
+                    } else {
+                        null
+                    }
+                    Result.success(NetworkResult(dto, status, body))
                 } else {
-                    null
+                    Result.success(NetworkResult(null, status, body))
                 }
-                Result.success(NetworkResult(dto, status, body))
-            } else {
-                Result.success(NetworkResult(null, status, body))
-            }
             println("LOG - GetCentros response Status: ${response.status}")
             result
         } catch (e: Exception) {
@@ -450,6 +473,127 @@ class ApiConnection(private val httpClient: HttpClient) {
         }
     }
 
+    suspend fun deleteDispositivo(
+        token: String,
+        idDispositivo: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.delete(DISPOSITIVOS_URL + "/${idDispositivo}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
 
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteDispositivo response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteIncidencia(
+        token: String,
+        idIncidencia: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.delete(INCIDENCIAS_URL + "/${idIncidencia}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteIncidencia response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+
+    }
+
+    suspend fun deleteUsuario(
+        token: String,
+        dniUsuario: String
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.delete(USUARIOS_URL + "/${dniUsuario}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteUsuario response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
 
 }

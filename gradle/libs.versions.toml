@@ -14,8 +14,9 @@ composeMultiplatform = "1.10.1"
 junit = "4.13.2"
 kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
+kscan = "0.6.0"
 ktor = "3.4.0"
-logback = "1.5.31"
+logback = "1.5.32"
 kotlinStdlib = "2.3.10"
 runner = "1.7.0"
 core = "1.7.0"
@@ -75,6 +76,10 @@ jetbrains-lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycl
 jetbrains-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle"}
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin-compose-navigation3" }
 jetbrains-navigation3-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "androidxNavigation3Material" }
+
+# Kscan
+kscan = { module = "io.github.ismai117:KScan", version.ref = "kscan" }
+
 
 
 

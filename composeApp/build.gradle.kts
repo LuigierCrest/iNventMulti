@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -22,10 +23,10 @@ kotlin {
     jvm(){
     }
     
-    js {
-        browser()
-        binaries.executable()
-    }
+//    js {
+//        browser()
+//        binaries.executable()
+//    }
     
 //    @OptIn(ExperimentalWasmDsl::class)
 //    wasmJs {
@@ -38,6 +39,10 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+
+            // Ksan barcode reader
+            implementation(libs.kscan)
+
         }
         commonMain.dependencies {
 
@@ -61,20 +66,14 @@ kotlin {
 
             implementation(libs.ktor.clientCIO)
 
-            //implementation(libs.coil.compose)
-            //implementation(libs.coil.network.ktor3)
-
             implementation(libs.koin.compose.navigation3)
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.jetbrains.navigation3.material3.adaptive)
             implementation(libs.jetbrains.lifecycle.viewmodel.nav3)
             implementation(libs.jetbrains.lifecycle.viewmodel)
             implementation(libs.kotlinx.serialization.json)
-//            implementation(libs.androidx.datastore)
-//            implementation(libs.androidx.datastore.preferences)
 
             implementation(libs.material.icons.extended)
-
 
         }
         commonTest.dependencies {

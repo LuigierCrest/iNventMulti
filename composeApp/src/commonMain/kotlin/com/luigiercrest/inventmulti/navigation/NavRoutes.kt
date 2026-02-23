@@ -19,4 +19,10 @@ sealed interface NavRoutes: NavKey {
     }
     @Serializable
     data class Detail(val categoryID: Int, val item: Int? = null) :  NavRoutes, NavKey
+
+    @Serializable
+    data object AppInfo: NavRoutes, NavKey
+
+    @Serializable
+    data class CreateUser(val categoryID: Int) :  NavRoutes, NavKey
 }

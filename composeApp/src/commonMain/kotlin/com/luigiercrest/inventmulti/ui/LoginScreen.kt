@@ -70,7 +70,7 @@ fun LoginScreen(
             when (it) {
                 is AuthNavigation.ToHome -> {
                     while (backStack.isNotEmpty()) {
-                        backStack.removeLast()
+                        backStack.removeAt(backStack.lastIndex)
                     }
                     backStack.add(NavRoutes.Home)
                 }
@@ -81,10 +81,12 @@ fun LoginScreen(
     }
 
     Screen {
-        Scaffold {
+        Scaffold { innerPadding ->
+
             Column(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(innerPadding)
                     .safeContentPadding()
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())

@@ -31,6 +31,7 @@ class HomeViewModel(private val homeUseCase: HomeUseCase, private val secureStor
     val rol = _rol.asStateFlow()
     val centro: StateFlow<String> = _centro.asStateFlow()
     val expiresIn = _expiresIn.asStateFlow()
+    val idUsuario = _idUsuario.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -38,7 +39,7 @@ class HomeViewModel(private val homeUseCase: HomeUseCase, private val secureStor
             _rol.value = authData?.rol ?: ""
             _token.value = authData?.token ?: ""
             _idCentro.value = authData?.idCentro.toString()
-//            _idUsuario.value = authData?.idUsuario.toString()
+            _idUsuario.value = authData?.idUsuario.toString()
 
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
@@ -62,6 +63,17 @@ class HomeViewModel(private val homeUseCase: HomeUseCase, private val secureStor
         }
 
     }
+    // Logout
+    fun logout() {
+        viewModelScope.launch {
+            secureStorage.clearAuth()
+        }
+    }
+
+
+    // Cambio de contraseña
+
+
 
 
 }

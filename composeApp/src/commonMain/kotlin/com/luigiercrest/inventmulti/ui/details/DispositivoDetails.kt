@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -20,7 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +33,56 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.domain.models.DispositivoResponseModel
+import com.luigiercrest.presentation.detail.DeleteState
+import com.luigiercrest.presentation.detail.DetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DispositivoDetails (dispositivo: DispositivoResponseModel, categoryId: Int, modifier: Modifier = Modifier) {
+fun DispositivoDetails (
+    dispositivo: DispositivoResponseModel,
+    categoryId: Int,
+    viewModel: DetailViewModel,
+    onDeleted: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val deleteState by viewModel.deleteState.collectAsState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Resetea el estado de eliminación al entrar en un nuevo dispositivo
+    LaunchedEffect(dispositivo.idDispositivo) {
+        viewModel.resetDeleteState()
+    }
+
+    // Navegar tras eliminación exitosa
+    LaunchedEffect(deleteState) {
+        if (deleteState is DeleteState.Success) {
+            onDeleted()
+            viewModel.resetDeleteState()
+        }
+    }
+
+
+    // Diálogo de confirmación
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Estás seguro de que deseas eliminar este dispositivo?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    viewModel.deleteDispositivo(dispositivo.idDispositivo!!)
+                }) {
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     // Categoría 6 administradores
     // Categoría 9 para Dire y Resp
@@ -80,11 +131,11 @@ fun DispositivoDetails (dispositivo: DispositivoResponseModel, categoryId: Int, 
         Spacer(modifier = Modifier.size(4.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
             Button(
                 onClick = { /* TODO: lógica de crear incidencia */ },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(0.7f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onTertiary
@@ -280,6 +331,16 @@ fun DispositivoDetails (dispositivo: DispositivoResponseModel, categoryId: Int, 
         )
         Spacer(modifier = Modifier.size(8.dp))
 
+        // Mensaje de error si falla
+        if (deleteState is DeleteState.Error) {
+            Text(
+                text = (deleteState as DeleteState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
 
         // Botones para actualizar y eliminar
         Row(
@@ -288,14 +349,23 @@ fun DispositivoDetails (dispositivo: DispositivoResponseModel, categoryId: Int, 
         ) {
             if (categoryId == 6) {
                 Button(
-                    onClick = { /* TODO: lógica de borrar */ },
+                    onClick = { showDeleteDialog = true },
                     modifier = Modifier.weight(1f),
+                    enabled = deleteState !is DeleteState.Loading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
                     )
                 ) {
-                    Text("Eliminar")
+                    if (deleteState is DeleteState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            color = MaterialTheme.colorScheme.onError,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Eliminar")
+                    }
                 }
             }
 
