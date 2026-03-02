@@ -1,0 +1,178 @@
+package com.luigiercrest.inventmulti.ui.create
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.luigiercrest.inventmulti.ui.Screen
+import com.luigiercrest.presentation.create.CreateViewModel
+import org.koin.compose.viewmodel.koinViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateIncidenciaScreen(
+    categoryId: Int,
+    idDispositivo: Int,
+    idCentro: Int,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CreateViewModel = koinViewModel()
+){
+    val uiState by viewModel.state.collectAsState()
+
+    var idDispositivo by remember { mutableStateOf(idDispositivo.toString()) }
+    var idCentro by remember { mutableStateOf(idCentro.toString()) }
+    var idServicioTecnico by remember { mutableStateOf("") }
+    var dniResponsable by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
+    var fechaReporte by remember { mutableStateOf( "") }
+    var estado by remember { mutableStateOf("") }
+
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) onBackClick()
+    }
+
+    Screen {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Nueva incidencia") },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = "Volver"
+                            )
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+
+            Column(modifier = modifier.fillMaxWidth().padding(padding)) {
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = idDispositivo,
+                    onValueChange = { idDispositivo = it },
+                    label = { Text("Nº de dispositivo") },
+                    readOnly = true,
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = idCentro,
+                    onValueChange = { idCentro = it },
+                    label = { Text("Nº de centro") },
+                    readOnly = true,
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = idServicioTecnico,
+                    onValueChange = { idServicioTecnico = it },
+                    label = { Text("Nº de servicio técnico") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = dniResponsable,
+                    onValueChange = { dniResponsable = it },
+                    label = { Text("DNI del responsable") },
+                    readOnly = (categoryId == 10), // para categoría 10 true
+                    enabled = (categoryId != 10), // para categoría 10 false
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = fechaReporte,
+                    onValueChange = { fechaReporte = it },
+                    label = { Text("Fecha de reporte") },
+                    readOnly = (categoryId == 10), // para categoría 10 true
+                    enabled = (categoryId != 10), // para categoría 10 false
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                OutlinedTextField(
+                    value = estado,
+                    onValueChange = { estado = it },
+                    label = { Text("Estado") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.createIncidencia(
+                            idDispositivo = idDispositivo.toIntOrNull() ?: 0,
+                            idCentro = idCentro.toIntOrNull() ?: 0,
+                            idServicioTecnico = idServicioTecnico.toIntOrNull() ?: 0,
+                            dniResponsable = dniResponsable,
+                            descripcion = descripcion,
+                            fechaReporte = fechaReporte,
+                            estado = estado
+                        )
+                    },
+                    enabled = !uiState.isLoading
+                            && idDispositivo.isNotBlank()
+                            && idCentro.isNotBlank()
+                            && idServicioTecnico.isNotBlank()
+                            && dniResponsable.isNotBlank()
+                            && descripcion.isNotBlank()
+                            && fechaReporte.isNotBlank()
+                            && estado.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Crear incidencia")
+                }
+                uiState.errorMessage?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+            }
+
+        }
+    }
+
+}

@@ -2,11 +2,13 @@ package com.luigiercrest.domain.di
 
 import com.luigiercrest.domain.repository.CategoryRepository
 import com.luigiercrest.domain.repository.ChangePasswordRepository
+import com.luigiercrest.domain.repository.CreateRepository
 import com.luigiercrest.domain.repository.DetailRepository
 import com.luigiercrest.domain.repository.HomeRepository
 import com.luigiercrest.domain.repository.LoginRepository
 import com.luigiercrest.domain.usecase.CategoryUseCase
 import com.luigiercrest.domain.usecase.ChangePasswordUseCase
+import com.luigiercrest.domain.usecase.CreateUseCase
 import com.luigiercrest.domain.usecase.DetailUseCase
 import com.luigiercrest.domain.usecase.HomeUseCase
 import com.luigiercrest.domain.usecase.LoginUseCase
@@ -29,5 +31,9 @@ val domainModule = module {
 
     factory {
         ChangePasswordUseCase(get<ChangePasswordRepository>())
+    }
+
+    factory {
+        CreateUseCase(get<CreateRepository>())
     }
 }

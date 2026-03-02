@@ -166,8 +166,9 @@ fun CategoryScreen(
                     }
 
                     // FAB + para nuevo registro
-                    // oculto para 7, 9 y 10
-                    if (category.idCategoria != 7 && category.idCategoria != 9 && category.idCategoria != 10) {
+                    // oculto para incidencias 7 y 10, dispositivo dire y resp 9
+//                    if (category.idCategoria != 7 && category.idCategoria != 9 && category.idCategoria != 10) {
+                    if (category.idCategoria == 5 || category.idCategoria == 8) {
                         FloatingActionButton(
                             onClick = { onCreateClick(category.idCategoria) },
                             containerColor = MaterialTheme.colorScheme.primary,

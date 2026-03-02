@@ -27,4 +27,11 @@ sealed interface NavRoutes: NavKey {
 
     @Serializable
     data class CreateUser(val categoryID: Int) :  NavRoutes, NavKey
+
+    @Serializable
+    data class CreateIncidencia(
+        val categoryID: Int,
+        val idDispositivo: Int,
+        val idCentro: Int,
+    ) : NavRoutes, NavKey
 }

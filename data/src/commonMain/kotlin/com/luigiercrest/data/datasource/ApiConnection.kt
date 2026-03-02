@@ -11,10 +11,9 @@ import com.luigiercrest.data.dto.LoginDataDTO
 import com.luigiercrest.data.dto.LoginResponseDTO
 import com.luigiercrest.data.dto.ProveedorDTO
 import com.luigiercrest.data.dto.ServicioTecnicoDTO
-import com.luigiercrest.data.dto.ChangePasswordRequestDTO
 import com.luigiercrest.data.dto.ChangePasswordResponseDTO
+import com.luigiercrest.data.dto.CreateResponseDTO
 import com.luigiercrest.data.dto.UpdateResponseDTO
-import com.luigiercrest.domain.models.UpdateResponseModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
 import io.ktor.client.request.delete
@@ -1077,6 +1076,80 @@ class ApiConnection(private val httpClient: HttpClient) {
             }
             val result = Result.success(NetworkResult(dto, status, body))
             println("LOG - changePassword response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createUsuario(
+        token: String,
+        usuarioDTO: UsuarioDTO
+    ): Result<NetworkResult<CreateResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.post(USUARIOS_URL) {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(usuarioDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    Json.decodeFromString<CreateResponseDTO>(body)
+                } else {
+                    CreateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                CreateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - createUsuario response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createIncidencia(
+        token: String,
+        incidenciaDTO: IncidenciaDTO
+    ): Result<NetworkResult<CreateResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.post("$INCIDENCIAS_URL/nuevaincidencia") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(incidenciaDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    Json.decodeFromString<CreateResponseDTO>(body)
+                } else {
+                    CreateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                CreateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - createUsuario response Status: ${response.status}")
             result
         } catch (e: Exception) {
             Result.failure(e)

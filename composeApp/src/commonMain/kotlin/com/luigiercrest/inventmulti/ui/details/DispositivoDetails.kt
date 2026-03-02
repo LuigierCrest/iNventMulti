@@ -42,6 +42,7 @@ fun DispositivoDetails (
     dispositivo: DispositivoResponseModel,
     categoryId: Int,
     viewModel: DetailViewModel,
+    onCreateIncidencia: (categoryId: Int, idDispositivo: Int, idCentro: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -114,7 +115,14 @@ fun DispositivoDetails (
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = { /* TODO: lógica de crear incidencia */ },
+                onClick = {
+                    onCreateIncidencia(
+                        // Desde aquí se manda idDispositivo e idCentro
+                        categoryId,
+                        dispositivo.idDispositivo?: 0,
+                        dispositivo.idCentro?: 0,
+                    )
+                },
                 modifier = Modifier.fillMaxWidth(0.7f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,
@@ -182,8 +190,7 @@ fun DispositivoDetails (
             onValueChange = { ultimaActualizacion = it },
             label = { Text("Última actualización") },
             readOnly = true,
-            enabled = false,
-            modifier = Modifier.fillMaxWidth()
+           modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(

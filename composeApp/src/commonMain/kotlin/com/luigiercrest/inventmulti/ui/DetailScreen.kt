@@ -55,6 +55,7 @@ import com.luigiercrest.domain.models.ServicioTecnicoModel
 import com.luigiercrest.domain.models.ServicioTecnicoResponseModel
 import com.luigiercrest.domain.models.UsuarioModel
 import com.luigiercrest.domain.models.UsuarioResponseModel
+import com.luigiercrest.inventmulti.navigation.NavRoutes
 import com.luigiercrest.inventmulti.navigation.RefreshEventAfterDelOrUpdate
 import com.luigiercrest.inventmulti.ui.details.AsignacionDetails
 import com.luigiercrest.inventmulti.ui.details.CentroDetails
@@ -82,6 +83,7 @@ fun DetailScreen(
     onBackClick: () -> Unit,
     onDeleted: () -> Unit,
     onUpdated: () -> Unit,
+    onCreateIncidencia: (categoryId: Int, idDispositivo: Int, idCentro: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
@@ -317,7 +319,17 @@ fun DetailScreen(
                         3 -> state.servicio?.let { ServicioTecnicoDetails(it, viewModel) }
                         4 -> state.asignacion?.let { AsignacionDetails(it,viewModel) }
                         5, 8 -> state.usuario?.let { UsuarioDetails(it, categoryId, viewModel)}
-                        6, 9 -> state.dispositivo?.let { DispositivoDetails(it, categoryId, viewModel)}
+                        6, 9 -> state.dispositivo?.let {
+                            DispositivoDetails(
+                                dispositivo = it,
+                                categoryId = categoryId,
+                                viewModel = viewModel,
+                                onCreateIncidencia = {
+                                    categoryId, idDispositivo, idCentro ->
+                                    onCreateIncidencia( categoryId, idDispositivo, idCentro)
+                                }
+                            )
+                        }
                         7, 10 -> state.incidencia?.let { IncidenciaDetails(it, viewModel,categoryId) }
                     }
                 }

@@ -3,11 +3,13 @@ package com.luigiercrest.data.di
 import com.luigiercrest.data.database.datasource.ApiConnection
 import com.luigiercrest.data.repository.CategoryRepositoryImp
 import com.luigiercrest.data.repository.ChangePasswordRepositoryImp
+import com.luigiercrest.data.repository.CreateRepositoryImp
 import com.luigiercrest.data.repository.DetailRepositoryImp
 import com.luigiercrest.data.repository.HomeRepositoryImp
 import com.luigiercrest.data.repository.LoginRepositoryImp
 import com.luigiercrest.domain.repository.CategoryRepository
 import com.luigiercrest.domain.repository.ChangePasswordRepository
+import com.luigiercrest.domain.repository.CreateRepository
 import com.luigiercrest.domain.repository.DetailRepository
 import com.luigiercrest.domain.repository.HomeRepository
 import com.luigiercrest.domain.repository.LoginRepository
@@ -68,5 +70,9 @@ val dataModule = module {
 
     single<ChangePasswordRepository> {
         ChangePasswordRepositoryImp(get<ApiConnection>())
+    }
+
+    single<CreateRepository> {
+        CreateRepositoryImp(get<ApiConnection>())
     }
 }

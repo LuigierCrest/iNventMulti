@@ -2,6 +2,7 @@ package com.luigiercrest.presentation.di
 
 import com.luigiercrest.presentation.category.CategoryViewModel
 import com.luigiercrest.presentation.changePassword.ChangePasswordViewModel
+import com.luigiercrest.presentation.create.CreateViewModel
 import com.luigiercrest.presentation.detail.DetailViewModel
 import com.luigiercrest.presentation.home.HomeViewModel
 import org.koin.core.module.dsl.viewModel
@@ -14,4 +15,5 @@ val presentationModule = module {
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DetailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get(), get()) }
+    viewModel { CreateViewModel(get(), get()) }
 }

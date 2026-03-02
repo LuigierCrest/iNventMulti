@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -21,7 +22,8 @@ import com.luigiercrest.inventmulti.ui.ChangePasswdScreen
 import com.luigiercrest.inventmulti.ui.DetailScreen
 import com.luigiercrest.inventmulti.ui.HomeScreen
 import com.luigiercrest.inventmulti.ui.LoginScreen
-import com.luigiercrest.inventmulti.ui.create.CreateUserScreen
+import com.luigiercrest.inventmulti.ui.create.CreateIncidenciaScreen
+import com.luigiercrest.inventmulti.ui.create.CreateUsuarioScreen
 import com.luigiercrest.presentation.changePassword.ChangePasswordViewModel
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -40,6 +42,7 @@ fun NavRoot () {
                     subclass(NavRoutes.Detail::class, NavRoutes.Detail.serializer())
                     subclass(NavRoutes.AppInfo::class, NavRoutes.AppInfo.serializer())
                     subclass(NavRoutes.CreateUser::class, NavRoutes.CreateUser.serializer())
+                    subclass(NavRoutes.CreateIncidencia::class, NavRoutes.CreateIncidencia.serializer())
                     subclass(NavRoutes.ChangePassword::class, NavRoutes.ChangePassword.serializer())
                 }
             }
@@ -98,7 +101,16 @@ fun NavRoot () {
                         }
                     },
                     onCreateClick = { categoryId ->
-                        backStack.add(NavRoutes.CreateUser(categoryId))
+
+                        when (categoryId) {
+//                            1 ->  backStack.add(NavRoutes.CreateCentro(categoryId)) // nuevo centro
+//                            2 ->  backStack.add(NavRoutes.CreateProveedor(categoryId)) // nuevo proveedor
+//                            3 ->  backStack.add(NavRoutes.CreateServicioTecnico(categoryId)) // nuevo servicio técnico
+//                            4 ->  backStack.add(NavRoutes.CreateAsignacion(categoryId)) // nuevo asignación
+                            5, 8 -> backStack.add(NavRoutes.CreateUser(categoryId)) // nuevo usuario (admin o dire)
+//                            6, 9 -> backStack.add(NavRoutes.CreateDispositivo(categoryId)) // nueva dispositivo
+//                            7, 10 -> backStack.add(NavRoutes.CreateIncidencia(categoryId)) // nuevo incidencia
+                        }
                     },
                     modifier = Modifier.fillMaxSize(),
 
@@ -140,6 +152,15 @@ fun NavRoot () {
                         if (backStack.isNotEmpty()) {
                             backStack.removeAt(backStack.lastIndex)
                         }
+                    },
+                    onCreateIncidencia = { category, idDispositivo, idCentro ->
+                        backStack.add(
+                            NavRoutes.CreateIncidencia(
+                                key.categoryID,
+                                idDispositivo,
+                                idCentro
+                            )
+                        )
                     }
                 )
             }
@@ -169,8 +190,18 @@ fun NavRoot () {
 
             // Crear usuario
             entry<NavRoutes.CreateUser> { key ->
-                CreateUserScreen(
+                CreateUsuarioScreen(
                     categoryId = key.categoryID,
+                    onBackClick = { backStack.removeAt(backStack.lastIndex) }
+                )
+            }
+
+            // Crear incidencia
+            entry<NavRoutes.CreateIncidencia> { key ->
+                CreateIncidenciaScreen(
+                    categoryId = key.categoryID,
+                    idDispositivo = key.idDispositivo,
+                    idCentro = key.idCentro,
                     onBackClick = { backStack.removeAt(backStack.lastIndex) }
                 )
             }
@@ -180,3 +211,4 @@ fun NavRoot () {
     )
 
 }
+

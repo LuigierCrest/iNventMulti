@@ -10,7 +10,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -24,22 +27,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.ui.Screen
 import com.luigiercrest.inventmulti.ui.isValidDni
+import com.luigiercrest.presentation.create.CreateViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateUserScreen(
+fun CreateUsuarioScreen(
     categoryId: Int,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: CreateViewModel= koinViewModel()
 ) {
+    val uiState by viewModel.state.collectAsState()
+
     var dni by remember { mutableStateOf("") }
     var idCentro by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
@@ -51,10 +63,19 @@ fun CreateUserScreen(
 
     val isDniValid = remember(dni) { isValidDni(dni) }
 
+    var contrasena by remember { mutableStateOf("") }
+    var confirmarContrasena by remember { mutableStateOf("") }
+    var contrasenaVisible by remember { mutableStateOf(false) }
+    var confirmarContrasenaVisible by remember { mutableStateOf(false) }
+
     val rolOptions = when (categoryId) {
         5 -> listOf("ADMIN", "DIRE", "RESP")
         8 -> listOf("DIRE", "RESP")
         else -> emptyList()
+    }
+
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) onBackClick()
     }
 
     Screen {
@@ -111,23 +132,25 @@ fun CreateUserScreen(
 
                 OutlinedTextField(
                     value = nombre,
-                    onValueChange = { nombre = it },
+                    onValueChange = { if (it.length <=50) nombre = it },
                     label = { Text("Nombre") },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = apellidos,
-                    onValueChange = { apellidos = it },
+                    onValueChange = {if (it.length <=100) apellidos = it },
                     label = { Text("Apellidos") },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { if (it.length <=100) email = it },
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -135,7 +158,7 @@ fun CreateUserScreen(
 
                 OutlinedTextField(
                     value = departamento,
-                    onValueChange = { departamento = it },
+                    onValueChange = { if (it.length <=100) departamento = it },
                     label = { Text("Departamento") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -177,14 +200,86 @@ fun CreateUserScreen(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = contrasena,
+                    onValueChange = { if (it.length <= 100) contrasena = it },
+                    label = { Text("Contraseña") },
+                    singleLine = true,
+                    visualTransformation = if (contrasenaVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { contrasenaVisible = !contrasenaVisible }) {
+                            Icon(
+                                imageVector = if (contrasenaVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (contrasenaVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = confirmarContrasena,
+                    onValueChange = { if (it.length <= 100) confirmarContrasena = it },
+                    label = { Text("Confirmar contraseña") },
+                    singleLine = true,
+                    isError = confirmarContrasena.isNotEmpty() && contrasena != confirmarContrasena,
+                    visualTransformation = if (confirmarContrasenaVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { confirmarContrasenaVisible = !confirmarContrasenaVisible }) {
+                            Icon(
+                                imageVector = if (confirmarContrasenaVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (confirmarContrasenaVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (confirmarContrasena.isNotEmpty() && contrasena != confirmarContrasena) {
+                    Text(
+                        text = "Las contraseñas no coinciden",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* TODO: lógica de crear usuario via ViewModel */ },
+                    onClick = {
+                        viewModel.createUsuario(
+                            dni = dni,
+                            idCentro = idCentro.toIntOrNull() ?: 0,
+                            nombre = nombre,
+                            apellidos = apellidos,
+                            email = email,
+                            departamento = departamento,
+                            rol = rol,
+                            contrasena = contrasena
+                        )
+                    },
+                    enabled = !uiState.isLoading
+                            && isDniValid
+                            && nombre.isNotBlank()
+                            && apellidos.isNotBlank()
+                            && rol.isNotBlank()
+                            && contrasena.isNotBlank()
+                            && contrasena == confirmarContrasena,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Crear usuario")
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                    } else {
+                        Text("Crear usuario")
+                    }
+                }
+                uiState.errorMessage?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
