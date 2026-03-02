@@ -31,7 +31,7 @@ fun ServicioTecnicoDetails (
 ) {
     var nombre by remember(servicioTecnico.nombre) { mutableStateOf(servicioTecnico.nombre?:"") }
     var direccion by remember(servicioTecnico.direccion) { mutableStateOf(servicioTecnico.direccion?:"") }
-    var telefono by remember(servicioTecnico.telefono) { mutableStateOf(servicioTecnico.telefono.toString()?:"") }
+    var telefono by remember(servicioTecnico.telefono) { mutableStateOf(servicioTecnico.telefono.toString()) }
     var email by remember(servicioTecnico.email) { mutableStateOf(servicioTecnico.email?:"") }
 
     // Sincronizar cambios con el ViewModel cada vez que cambia un campo

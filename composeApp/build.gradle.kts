@@ -131,6 +131,13 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.luigiercrest.inventmulti"
             packageVersion = "1.0.0"
+            linux {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/icon.png"))
+            }
+            windows {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/icon.ico"))
+            }
         }
+
     }
 }

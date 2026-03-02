@@ -45,6 +45,7 @@ import inventmulti.composeapp.generated.resources.Res
 import inventmulti.composeapp.generated.resources.iNvent_logo_wellcome
 import org.jetbrains.compose.resources.painterResource
 import com.luigiercrest.presentation.login.LoginViewModel
+import inventmulti.composeapp.generated.resources.iNvent_logo2
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -96,12 +97,16 @@ fun LoginScreen(
             ) {
 
                 Image(
-                    painterResource(Res.drawable.iNvent_logo_wellcome),
+                    painterResource(Res.drawable.iNvent_logo2),
                     null,
-                    modifier = Modifier.size(300.dp)
+                    modifier = Modifier.size(250.dp)
                 )
-                Text("iNvent", style = MaterialTheme.typography.headlineLarge)
-                Text("Una App para reunirlo todo")
+//                Text("iNvent", style = MaterialTheme.typography.headlineLarge)
+                Text(
+                    "Una App para reunirlo todo",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
                 Spacer(modifier = Modifier.size(32.dp))
                 OutlinedTextField(
                     value = dniValue,

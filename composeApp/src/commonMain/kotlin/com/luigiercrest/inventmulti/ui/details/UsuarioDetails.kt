@@ -13,10 +13,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +46,7 @@ fun UsuarioDetails(
     // Categoría 8 para Dire
 
     var dni by remember(usuario.dni) { mutableStateOf(usuario.dni?:"") }
-    var idCentro by remember(usuario.idCentro) { mutableStateOf(usuario.idCentro.toString()?:"") }
+    var idCentro by remember(usuario.idCentro) { mutableStateOf(usuario.idCentro.toString()) }
     var nombre by remember(usuario.nombre) { mutableStateOf(usuario.nombre?:"") }
     var apellidos by remember(usuario.apellidos) { mutableStateOf(usuario.apellidos?:"") }
     var email by remember(usuario.email) { mutableStateOf(usuario.email?:"") }
@@ -147,7 +147,7 @@ fun UsuarioDetails(
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rolExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
             )
             ExposedDropdownMenu(
                 expanded = rolExpanded,

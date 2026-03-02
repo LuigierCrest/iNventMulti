@@ -1,9 +1,11 @@
 package com.luigiercrest.inventmulti
 
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.luigiercrest.inventmulti.di.appModule
 import com.luigiercrest.presentation.platformJvmModule
+import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
 
 fun main() = application {
@@ -16,6 +18,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "INventMulti",
+        icon = painterResource("drawable/icon.png")
     ) {
         App()
     }
