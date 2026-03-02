@@ -17,12 +17,15 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.luigiercrest.inventmulti.ui.AppInfoScreen
 import com.luigiercrest.inventmulti.ui.CategoryScreen
+import com.luigiercrest.inventmulti.ui.ChangePasswdScreen
 import com.luigiercrest.inventmulti.ui.DetailScreen
 import com.luigiercrest.inventmulti.ui.HomeScreen
 import com.luigiercrest.inventmulti.ui.LoginScreen
 import com.luigiercrest.inventmulti.ui.create.CreateUserScreen
+import com.luigiercrest.presentation.changePassword.ChangePasswordViewModel
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -37,6 +40,7 @@ fun NavRoot () {
                     subclass(NavRoutes.Detail::class, NavRoutes.Detail.serializer())
                     subclass(NavRoutes.AppInfo::class, NavRoutes.AppInfo.serializer())
                     subclass(NavRoutes.CreateUser::class, NavRoutes.CreateUser.serializer())
+                    subclass(NavRoutes.ChangePassword::class, NavRoutes.ChangePassword.serializer())
                 }
             }
         },
@@ -58,6 +62,9 @@ fun NavRoot () {
             entry<NavRoutes.Login> {LoginScreen(backStack = backStack)}
             entry<NavRoutes.Home> {HomeScreen(
                 onCategoryClick = {backStack.add(NavRoutes.Category(it))},
+                onChangePasswordClick = {
+                    backStack.add(NavRoutes.ChangePassword)
+                },
                 onAppInfoClick = {
                     backStack.add(NavRoutes.AppInfo)
                 }
@@ -76,11 +83,19 @@ fun NavRoot () {
                     category = key.category,
                     onItemClick = { categoryId, item ->
                         SharedItemHolder.setItem(item)
-                        // Elimina Detail previo antes de añadir otro nuevo
-                        if (backStack.lastOrNull() is NavRoutes.Detail) {
-                            backStack.removeAt(backStack.lastIndex)
+                        if (isMultiPane) {
+                            // En multipane: solo actualizar el item, no remontar DetailScreen
+                            // Si no hay Detail aún en el backStack, añadirlo
+                            if (backStack.lastOrNull() !is NavRoutes.Detail) {
+                                backStack.add(NavRoutes.Detail(categoryId))
+                            }
+                        } else {
+                            // En single pane: eliminar Detail previo si existe y añadir nuevo
+                            if (backStack.lastOrNull() is NavRoutes.Detail) {
+                                backStack.removeAt(backStack.lastIndex)
+                            }
+                            backStack.add(NavRoutes.Detail(categoryId))
                         }
-                        backStack.add(NavRoutes.Detail(categoryId))
                     },
                     onCreateClick = { categoryId ->
                         backStack.add(NavRoutes.CreateUser(categoryId))
@@ -111,6 +126,35 @@ fun NavRoot () {
                     isMultiPane = isMultiPane,
                     modifier = Modifier.fillMaxSize(),
                     onBackClick = {
+                        backStack.removeAt(backStack.lastIndex)
+                    },
+                    onDeleted = {
+                        // navegar atrás y refrescar la lista tras eliminar un elemento
+                        if (backStack.isNotEmpty()){
+                            backStack.removeAt(backStack.lastIndex)
+                        }
+                    },
+                    onUpdated = {
+                        // En pantalla estrecha vuelve a CategoryScreen para recargar la lista
+                        // DetailScreen ya llama a onUpdated solo cuando !isMultiPane
+                        if (backStack.isNotEmpty()) {
+                            backStack.removeAt(backStack.lastIndex)
+                        }
+                    }
+                )
+            }
+
+            // Cambiar contraseña
+            entry<NavRoutes.ChangePassword> {
+                val changePasswordViewModel: ChangePasswordViewModel = koinViewModel()
+                val state = changePasswordViewModel.state.collectAsState()
+                ChangePasswdScreen(
+                    onBackClick = { backStack.removeAt(backStack.lastIndex) },
+                    onPasswordChanged = { newPassword ->
+                        changePasswordViewModel.changePassword(newPassword)
+                    },
+                    state = state.value,
+                    onSuccessNavigate = {
                         backStack.removeAt(backStack.lastIndex)
                     }
                 )

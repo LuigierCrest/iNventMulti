@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.models.CategoryModel
+import com.luigiercrest.inventmulti.navigation.RefreshEventAfterDelOrUpdate
 import com.luigiercrest.inventmulti.scanner.BarcodeScannerScreen
 import com.luigiercrest.inventmulti.ui.widgets.cards.AsignacionCard
 import com.luigiercrest.inventmulti.ui.widgets.cards.CentroCard
@@ -66,6 +67,11 @@ fun CategoryScreen(
 
     LaunchedEffect(category.idCategoria) {
         viewModel.setCategoryId(category.idCategoria)
+    }
+    LaunchedEffect(category.idCategoria){
+        RefreshEventAfterDelOrUpdate.refreshTrigger.collect {
+            viewModel.setCategoryId(category.idCategoria)
+        }
     }
 
     // Mostrar escáner a pantalla completa cuando se activa
@@ -138,7 +144,7 @@ fun CategoryScreen(
                     }
                 }
             },
-            // FAB nuevo elemento
+            // FABs nuevo elemento y escáner de código de barras
             floatingActionButton = {
                 Column (
                     horizontalAlignment = androidx.compose.ui.Alignment.End,
@@ -159,8 +165,9 @@ fun CategoryScreen(
                         }
                     }
 
-                    // FAB solo para nuevo usuario
-                    if (category.idCategoria == 5 || category.idCategoria == 8) {
+                    // FAB + para nuevo registro
+                    // oculto para 7, 9 y 10
+                    if (category.idCategoria != 7 && category.idCategoria != 9 && category.idCategoria != 10) {
                         FloatingActionButton(
                             onClick = { onCreateClick(category.idCategoria) },
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -173,8 +180,6 @@ fun CategoryScreen(
                         }
                     }
                 }
-
-
             },
             modifier = modifier.fillMaxSize()
         ) { padding ->

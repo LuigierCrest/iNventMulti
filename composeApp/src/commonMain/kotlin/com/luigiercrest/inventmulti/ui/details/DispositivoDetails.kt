@@ -42,62 +42,23 @@ fun DispositivoDetails (
     dispositivo: DispositivoResponseModel,
     categoryId: Int,
     viewModel: DetailViewModel,
-    onDeleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val deleteState by viewModel.deleteState.collectAsState()
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    // Resetea el estado de eliminación al entrar en un nuevo dispositivo
-    LaunchedEffect(dispositivo.idDispositivo) {
-        viewModel.resetDeleteState()
-    }
-
-    // Navegar tras eliminación exitosa
-    LaunchedEffect(deleteState) {
-        if (deleteState is DeleteState.Success) {
-            onDeleted()
-            viewModel.resetDeleteState()
-        }
-    }
-
-
-    // Diálogo de confirmación
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Confirmar eliminación") },
-            text = { Text("¿Estás seguro de que deseas eliminar este dispositivo?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDeleteDialog = false
-                    viewModel.deleteDispositivo(dispositivo.idDispositivo!!)
-                }) {
-                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar")
-                }
-            }
-        )
-    }
 
     // Categoría 6 administradores
     // Categoría 9 para Dire y Resp
 
-    var idCentro by remember { mutableStateOf(dispositivo.idCentro?.toString() ?: "") }
-    var nombre by remember { mutableStateOf(dispositivo.nombre ?: "") }
-    var numSerie by remember { mutableStateOf(dispositivo.numSerie ?: "") }
-    var marcaModelo by remember { mutableStateOf(dispositivo.marcaModelo ?: "") }
-    var ultimaActualizacion by remember { mutableStateOf(dispositivo.ultimaActualizacion ?: "") }
-    var observaciones by remember { mutableStateOf(dispositivo.observaciones ?: "") }
-    var categoria by remember { mutableStateOf(dispositivo.categoria ?: "") }
-    var estado by remember { mutableStateOf(dispositivo.estado ?: "") }
-    var uso by remember { mutableStateOf(dispositivo.uso ?: "") }
-    var ubicacion by remember { mutableStateOf(dispositivo.ubicacion ?: "") }
-    var idAsignacion by remember { mutableStateOf(dispositivo.idAsignacion?.toString() ?: "") }
+    var idCentro by remember(dispositivo.idCentro) { mutableStateOf(dispositivo.idCentro?.toString() ?: "") }
+    var nombre by remember(dispositivo.nombre) { mutableStateOf(dispositivo.nombre ?: "") }
+    var numSerie by remember(dispositivo.numSerie) { mutableStateOf(dispositivo.numSerie ?: "") }
+    var marcaModelo by remember(dispositivo.marcaModelo) { mutableStateOf(dispositivo.marcaModelo ?: "") }
+    var ultimaActualizacion by remember(dispositivo.ultimaActualizacion) { mutableStateOf(dispositivo.ultimaActualizacion ?: "") }
+    var observaciones by remember(dispositivo.observaciones) { mutableStateOf(dispositivo.observaciones ?: "") }
+    var categoria by remember(dispositivo.categoria) { mutableStateOf(dispositivo.categoria ?: "") }
+    var estado by remember(dispositivo.estado) { mutableStateOf(dispositivo.estado ?: "") }
+    var uso by remember(dispositivo.uso) { mutableStateOf(dispositivo.uso ?: "") }
+    var ubicacion by remember(dispositivo.ubicacion) { mutableStateOf(dispositivo.ubicacion ?: "") }
+    var idAsignacion by remember(dispositivo.idAsignacion) { mutableStateOf(dispositivo.idAsignacion?.toString() ?: "") }
 
     // Estados de expansión para los dropdowns
     var categoriaExpanded by remember { mutableStateOf(false) }
@@ -126,6 +87,25 @@ fun DispositivoDetails (
         "Miniportátil", "Monitor", "Ordenador", "Otros", "PDI/PIM",
         "Portátil", "Proyector", "Redes", "Robótica", "SAI/UPS",
         "Tablet", "Webcam" )}
+
+    // Sicronizar cambios con el ViewModel cada vez que cambia un campo
+    LaunchedEffect(idCentro, nombre, numSerie, marcaModelo, ultimaActualizacion, observaciones, categoria, estado, uso, ubicacion, idAsignacion) {
+        viewModel.setDispositivo(
+            dispositivo.copy(
+                idCentro = idCentro.toIntOrNull(),
+                nombre = nombre,
+                numSerie = numSerie,
+                marcaModelo = marcaModelo,
+                ultimaActualizacion = ultimaActualizacion,
+                observaciones = observaciones,
+                categoria = categoria,
+                estado = estado,
+                uso = uso,
+                ubicacion = ubicacion,
+                idAsignacion = idAsignacion.toIntOrNull()
+            )
+        )
+    }
 
     Column {
         Spacer(modifier = Modifier.size(4.dp))
@@ -201,6 +181,8 @@ fun DispositivoDetails (
             value = ultimaActualizacion,
             onValueChange = { ultimaActualizacion = it },
             label = { Text("Última actualización") },
+            readOnly = true,
+            enabled = false,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(4.dp))
@@ -329,55 +311,7 @@ fun DispositivoDetails (
             enabled = (categoryId != 9), // para categoría 9 false
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.size(8.dp))
 
-        // Mensaje de error si falla
-        if (deleteState is DeleteState.Error) {
-            Text(
-                text = (deleteState as DeleteState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-
-        // Botones para actualizar y eliminar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (categoryId == 6) {
-                Button(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier.weight(1f),
-                    enabled = deleteState !is DeleteState.Loading,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                ) {
-                    if (deleteState is DeleteState.Loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            color = MaterialTheme.colorScheme.onError,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Eliminar")
-                    }
-                }
-            }
-
-            Button(
-                onClick = { /* TODO: lógica de actualizar */ },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Actualizar")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
 }

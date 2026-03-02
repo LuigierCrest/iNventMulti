@@ -1,11 +1,10 @@
 package com.luigiercrest.domain.models
 
-data class ServicioTecnicoResponseModel (
+data class ServicioTecnicoModel (
     val idServicioTecnico: Int?,
     val nombre: String?,
     val direccion: String?,
     val telefono: String?,
-    val email: String?,
-    val statusCode: Int?
+    val email: String?
     ) {
 }

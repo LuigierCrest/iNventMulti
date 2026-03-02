@@ -11,12 +11,17 @@ import com.luigiercrest.data.dto.LoginDataDTO
 import com.luigiercrest.data.dto.LoginResponseDTO
 import com.luigiercrest.data.dto.ProveedorDTO
 import com.luigiercrest.data.dto.ServicioTecnicoDTO
+import com.luigiercrest.data.dto.ChangePasswordRequestDTO
+import com.luigiercrest.data.dto.ChangePasswordResponseDTO
+import com.luigiercrest.data.dto.UpdateResponseDTO
+import com.luigiercrest.domain.models.UpdateResponseModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -28,6 +33,8 @@ import kotlinx.serialization.json.Json
 class ApiConnection(private val httpClient: HttpClient) {
     //local P14
     //private val BASE_URL = "http://192.168.1.182:8080"
+    //local P14
+    // private val BASE_URL = "http://127.0.0.1:8080"
 
     // VPS
     private val BASE_URL = "https://inventapi.mooo.com"
@@ -45,18 +52,21 @@ class ApiConnection(private val httpClient: HttpClient) {
     val USUARIOS_URL = "${ADMIN_URL}/usuarios"
     val DISPOSITIVOS_URL = "${ADMIN_URL}/dispositivos"
     val INCIDENCIAS_URL = "${ADMIN_URL}/incidencias"
+    private val CHANGE_PASSWORD_URL = "${USUARIOS_URL}/actualizarpasswd"
 
 
     // /api/dire
     private val DIRE_URL = "${BASE_URL}/api/dire"
     val USUARIOS_CENTRO_URL = "${DIRE_URL}/usuarioscentro"
 
-
     // /api/resp
     private val RESP_URL = "${BASE_URL}/api/resp"
     val DISPOSITIVOS_CENTRO_URL = "${RESP_URL}/dispositivoscentro"
     val INCIDENCIAS_CENTRO_URL = "${RESP_URL}/incidenciascentro"
     val SERVICIOS_CENTRO_URL = "${RESP_URL}/serviciostecnicos"
+
+    // Autenticado: cambiar contraseña propia
+
 
 
     suspend fun login(loginData: LoginDataDTO): Result<NetworkResult<LoginResponseDTO>> {
@@ -594,6 +604,483 @@ class ApiConnection(private val httpClient: HttpClient) {
             Result.failure(e)
         }
 
+    }
+
+    suspend fun deleteCentro(
+        token: String,
+        idCentro: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.delete(CENTROS_URL + "/${idCentro}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteCentro response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteProveedor(
+        token: String,
+        idProveedor: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.delete(PROVEEDORES_URL + "/${idProveedor}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteProveedor response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteServicioTecnico(
+        token: String,
+        idServicioTecnico: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse =
+                httpClient.delete(SERVICIOS_URL + "/${idServicioTecnico}") {
+                    contentType(ContentType.Application.Json)
+                    accept(ContentType.Application.Json)
+                    headers {
+                        append("Authorization", "Bearer $token")
+                    }
+                }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteServicioTecnico response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteAsignacion(
+        token: String,
+        idAsignacion: Int
+    ): Result<NetworkResult<DeleteResponseDTO>> {
+        return try {
+            val response: HttpResponse =
+                httpClient.delete(ASIGNACIONES_URL + "/${idAsignacion}") {
+                    contentType(ContentType.Application.Json)
+                    accept(ContentType.Application.Json)
+                    headers {
+                        append("Authorization", "Bearer $token")
+                    }
+                }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<DeleteResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    DeleteResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                DeleteResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - DeleteAsignacion response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    suspend fun updateCentro(
+        token: String,
+        centroDTO: CentroDTO
+    ): Result<NetworkResult<UpdateResponseDTO>> {
+        return try {
+            // PUT actualiza centro por idCentro
+            val response: HttpResponse = httpClient.put(CENTROS_URL + "/${centroDTO.idCentro}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(centroDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateCentro response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateProveedor (
+        token: String,
+        proveedorDTO: ProveedorDTO
+    ): Result<NetworkResult<UpdateResponseDTO>> {
+        return try {
+            // PUT actualiza proveedor por idProveedor
+            val response: HttpResponse = httpClient.put(PROVEEDORES_URL + "/${proveedorDTO.idProveedor}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(proveedorDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateProveedor response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
+    suspend fun updateUsuario (
+        token: String,
+        usuarioDTO: UsuarioDTO
+    ): Result<NetworkResult<UpdateResponseDTO>> {
+        return try {
+            // PUT actualiza usuario por dni
+            val response: HttpResponse = httpClient.put(USUARIOS_URL + "/${usuarioDTO.dni}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(usuarioDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateUsuario response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateServicioTecnico (
+        token: String,
+        servicioTecnicoDTO: ServicioTecnicoDTO
+    ): Result<NetworkResult<UpdateResponseDTO>>{
+        return try {
+            // PUT actualiza servicio técnico por idServicioTecnico
+            val response: HttpResponse = httpClient.put(SERVICIOS_URL + "/${servicioTecnicoDTO.idServicioTecnico}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(servicioTecnicoDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateServicioTecnico response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun updateAsignacion (token: String, asignacionDTO: AsignacionDTO): Result<NetworkResult<UpdateResponseDTO>>{
+        return try {
+            // PUT actualiza asignación por idAsignacion
+            val response: HttpResponse = httpClient.put(ASIGNACIONES_URL + "/${asignacionDTO.idAsignacionCompra}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(asignacionDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateAsignacion response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun updateDispositivo (token: String, dispositivoDTO: DispositivoDTO): Result<NetworkResult<UpdateResponseDTO>>{
+        return try {
+            // PUT actualiza dispositivo por idDispositivo
+            val response: HttpResponse = httpClient.put(DISPOSITIVOS_URL + "/${dispositivoDTO.idDispositivo}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(dispositivoDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateDispositivo response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun updateIncidencia (token: String, incidenciaDTO: IncidenciaDTO): Result<NetworkResult<UpdateResponseDTO>>{
+        return try {
+            // PUT actualiza incidencia por idIncidencia
+            val response: HttpResponse = httpClient.put(INCIDENCIAS_URL + "/actualizarincidencia/${incidenciaDTO.idIncidencia}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(incidenciaDTO)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    // Intenta parsear como JSON
+                    Json.decodeFromString<UpdateResponseDTO>(body)
+                } else {
+                    // Si no es JSON, crea el DTO manualmente con el texto plano
+                    UpdateResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                UpdateResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - UpdateIncidencia response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun changePassword(
+        token: String,
+        newPassword: String,
+        idUsusario: Int
+    ): Result<NetworkResult<ChangePasswordResponseDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.put(CHANGE_PASSWORD_URL+"/${idUsusario}") {
+                contentType(ContentType.Text.Plain)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+                setBody(newPassword)
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val dto = try {
+                if (!body.isNullOrEmpty() && body.trim().startsWith("{")) {
+                    Json.decodeFromString<ChangePasswordResponseDTO>(body)
+                } else {
+                    ChangePasswordResponseDTO(body = body, statusCode = status)
+                }
+            } catch (e: Exception) {
+                ChangePasswordResponseDTO(body = body, statusCode = status)
+            }
+            val result = Result.success(NetworkResult(dto, status, body))
+            println("LOG - changePassword response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 }

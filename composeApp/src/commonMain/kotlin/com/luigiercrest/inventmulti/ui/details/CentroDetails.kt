@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,14 +21,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.domain.models.CentroResponseModel
+import com.luigiercrest.presentation.detail.DetailViewModel
 
 @Composable
-fun CentroDetails (centro: CentroResponseModel, modifier: Modifier = Modifier) {
+fun CentroDetails (
+    centro: CentroResponseModel,
+    viewModel: DetailViewModel,
+    modifier: Modifier = Modifier
+) {
 
-    var tipo by remember { mutableStateOf(centro.tipo?:"") }
-    var nombre by remember { mutableStateOf(centro.nombre?:"") }
-    var direccion by remember { mutableStateOf(centro.direccion?:"") }
-    var municipio by remember { mutableStateOf(centro.municipio?:"") }
+    var tipo by remember(centro.tipo) { mutableStateOf(centro.tipo?:"") }
+    var nombre by remember(centro.nombre) { mutableStateOf(centro.nombre?:"") }
+    var direccion by remember(centro.direccion) { mutableStateOf(centro.direccion?:"") }
+    var municipio by remember(centro.municipio) { mutableStateOf(centro.municipio?:"") }
+
+    LaunchedEffect(tipo, nombre, direccion, municipio) {
+        viewModel.setCentro(
+            centro.copy(
+                tipo = tipo,
+                nombre = nombre,
+                direccion = direccion,
+                municipio = municipio
+            )
+        )
+    }
 
     Column (modifier = modifier.fillMaxWidth()) {
         // Número de centro - solo lectura
@@ -67,32 +84,7 @@ fun CentroDetails (centro: CentroResponseModel, modifier: Modifier = Modifier) {
             label = { Text("Municipio") },
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.size(8.dp))
-        // Botones para actualizar y eliminar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Button(
-                onClick = { /* TODO: lógica de borrar */ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                )
-            ) {
-                Text("Eliminar")
-            }
 
-            Button(
-                onClick = { /* TODO: lógica de actualizar */ },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Actualizar")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
 }

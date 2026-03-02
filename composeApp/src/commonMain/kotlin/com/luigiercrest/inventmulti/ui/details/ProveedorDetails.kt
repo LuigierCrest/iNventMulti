@@ -13,20 +13,42 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.luigiercrest.domain.models.ProveedorModel
 import com.luigiercrest.domain.models.ProveedorResponseModel
+import com.luigiercrest.presentation.detail.DetailViewModel
 
 @Composable
-fun ProveedorDetails (proveedor: ProveedorResponseModel, modifier: Modifier = Modifier) {
-    var nombre by remember { mutableStateOf(proveedor.nombre?:"") }
-    var direccion by remember { mutableStateOf(proveedor.direccion?:"") }
-    var telefono by remember { mutableStateOf(proveedor.telefono.toString()?:"") }
-    var email by remember { mutableStateOf(proveedor.email?:"") }
+fun ProveedorDetails (
+    proveedor: ProveedorResponseModel,
+    viewModel: DetailViewModel,
+    modifier: Modifier = Modifier
+) {
+    var nombre by remember(proveedor.nombre) { mutableStateOf(proveedor.nombre?:"") }
+    var direccion by remember(proveedor.direccion) { mutableStateOf(proveedor.direccion?:"") }
+    var telefono by remember(proveedor.telefono) { mutableStateOf(proveedor.telefono?:"") }
+    var email by remember(proveedor.email) { mutableStateOf(proveedor.email?:"") }
+
+    // Sincronizar cambios con el ViewModel cada vez que cambia un campo
+    LaunchedEffect(nombre, direccion, telefono, email) {
+        viewModel.setProveedor(
+            proveedor.copy(
+                nombre = nombre,
+                direccion = direccion,
+                telefono = telefono,
+                email = email
+            )
+        )
+    }
+
+
 
     Column(modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -65,31 +87,7 @@ fun ProveedorDetails (proveedor: ProveedorResponseModel, modifier: Modifier = Mo
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.size(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Button(
-                onClick = { /* TODO: lógica de borrar */ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                )
-            ) {
-                Text("Eliminar")
-            }
 
-            Button(
-                onClick = { /* TODO: lógica de actualizar */ },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Actualizar")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
 }

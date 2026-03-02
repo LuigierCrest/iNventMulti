@@ -1,7 +1,6 @@
 package com.luigiercrest.domain.models
 
-
-data class DispositivoResponseModel(
+data class DispositivoModel(
     val idDispositivo: Int?,
     val idCentro: Int?,
     val nombre: String?,
@@ -13,6 +12,5 @@ data class DispositivoResponseModel(
     val categoria: String?,
     val ubicacion: String?,
     val uso: String?,
-    val idAsignacion: Int?,
-    val statusCode: Int?
+    val idAsignacion: Int?
 )

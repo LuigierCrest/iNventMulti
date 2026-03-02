@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,13 +21,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.domain.models.ServicioTecnicoResponseModel
+import com.luigiercrest.presentation.detail.DetailViewModel
 
 @Composable
-fun ServicioTecnicoDetails (servicioTecnico: ServicioTecnicoResponseModel, modifier: Modifier = Modifier) {
-    var nombre by remember { mutableStateOf(servicioTecnico.nombre?:"") }
-    var direccion by remember { mutableStateOf(servicioTecnico.direccion?:"") }
-    var telefono by remember { mutableStateOf(servicioTecnico.telefono.toString()?:"") }
-    var email by remember { mutableStateOf(servicioTecnico.email?:"") }
+fun ServicioTecnicoDetails (
+    servicioTecnico: ServicioTecnicoResponseModel,
+    viewModel: DetailViewModel,
+    modifier: Modifier = Modifier
+) {
+    var nombre by remember(servicioTecnico.nombre) { mutableStateOf(servicioTecnico.nombre?:"") }
+    var direccion by remember(servicioTecnico.direccion) { mutableStateOf(servicioTecnico.direccion?:"") }
+    var telefono by remember(servicioTecnico.telefono) { mutableStateOf(servicioTecnico.telefono.toString()?:"") }
+    var email by remember(servicioTecnico.email) { mutableStateOf(servicioTecnico.email?:"") }
+
+    // Sincronizar cambios con el ViewModel cada vez que cambia un campo
+    LaunchedEffect(nombre, direccion, telefono, email) {
+        viewModel.setServicio(
+            servicioTecnico.copy(
+                nombre = nombre,
+                direccion = direccion,
+                telefono = telefono,
+                email = email
+            )
+        )
+    }
 
     Column (modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -65,32 +83,7 @@ fun ServicioTecnicoDetails (servicioTecnico: ServicioTecnicoResponseModel, modif
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.size(8.dp))
-        // Botones para actualizar y eliminar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Button(
-                onClick = { /* TODO: lógica de borrar */ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                )
-            ) {
-                Text("Eliminar")
-            }
 
-            Button(
-                onClick = { /* TODO: lógica de actualizar */ },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Actualizar")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
 }

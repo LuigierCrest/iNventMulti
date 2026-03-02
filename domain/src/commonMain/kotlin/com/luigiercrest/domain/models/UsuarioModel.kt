@@ -1,6 +1,5 @@
 package com.luigiercrest.domain.models
-
-data class UsuarioResponseModel(
+data class UsuarioModel(
     val idUsuario: Int?,
     val dni: String?,
     val idCentro: Int?,
@@ -9,5 +8,5 @@ data class UsuarioResponseModel(
     val email: String?,
     val departamento: String?,
     val rol: String?,
-    val statusCode: Int?
+    val passwdHash: String?
 )

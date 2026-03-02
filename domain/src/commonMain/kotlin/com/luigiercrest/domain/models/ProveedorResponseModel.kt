@@ -4,7 +4,7 @@ data class ProveedorResponseModel (
     val idProveedor: Int?,
     val nombre: String?,
     val direccion: String?,
-    val telefono: Int?,
+    val telefono: String?,
     val email: String?,
     val statusCode: Int?
     ) {

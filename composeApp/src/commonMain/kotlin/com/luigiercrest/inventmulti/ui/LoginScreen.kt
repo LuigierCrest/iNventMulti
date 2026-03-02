@@ -206,19 +206,18 @@ fun isValidDni(dniValue: String): Boolean {
 
 
 private fun checkUserAndPassword(dni: String, passwd: String, viewModel: LoginViewModel) {
-    // ------------------------------------------------------------------------
-    // Esta función comprueba los datos, pero está obsoleta, solo para desarrollo.
+    // Se comprueban los datos por última vez antes de llamar a la API para evitar llamadas innecesarias
 
     if (dni.isEmpty()) {
-        println("El DNI/NIE no puede estar vacío")
+        println("LOG - DNI/NIE no puede estar vacío")
         return
     }
     if (!isValidDni(dni)) {
-        println("DNI/NIE inválido")
+        println("LOG - DNI/NIE inválido")
         return
     }
     if (passwd.isEmpty()) {
-        println("La contraseña no puede estar vacía")
+        println("LOG - La contraseña no puede estar vacía")
         return
     }
     // Verificar credenciales en la API

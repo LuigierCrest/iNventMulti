@@ -40,6 +40,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onCategoryClick: (CategoryModel) -> Unit,
     onAppInfoClick: () -> Unit,
+    onChangePasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -65,10 +66,11 @@ fun HomeScreen(
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }
                         ) {
-//                            DropdownMenuItem(text = { Text("Cambiar contraseña") }, onClick = {
-//                                // Acción para cambiar contraseña
-//                                menuExpanded = false
-//                            })
+                            DropdownMenuItem(text = { Text("Cambiar contraseña") }, onClick = {
+                                // Acción para cambiar contraseña
+                                menuExpanded = false
+                                onChangePasswordClick()
+                            })
 //                            DropdownMenuItem(text = { Text("Logout") }, onClick = {
 //                                // Borra el token y sale a login
 //                                viewModel.logout()
