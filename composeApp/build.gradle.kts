@@ -1,6 +1,4 @@
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,7 +7,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-//    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
@@ -21,18 +18,10 @@ kotlin {
 
     
     jvm(){
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
-    
-//    js {
-//        browser()
-//        binaries.executable()
-//    }
-    
-//    @OptIn(ExperimentalWasmDsl::class)
-//    wasmJs {
-//        browser()
-//        binaries.executable()
-//    }
     
     sourceSets {
         androidMain.dependencies {
@@ -40,9 +29,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
 
-            // Ksan barcode reader
+            // Kscan barcode reader
             implementation(libs.kscan)
-
         }
         commonMain.dependencies {
 
@@ -116,11 +104,7 @@ android {
 }
 
 dependencies {
-
     debugImplementation(compose.uiTooling)
-
-
-
 }
 
 compose.desktop {
@@ -140,4 +124,34 @@ compose.desktop {
         }
 
     }
+}
+
+// Fat JAR task para desktop (JVM)
+tasks.register<Jar>("fatJar") {
+    group = "build"
+    description = "Crea un fat JAR con todas las dependencias para desktop"
+
+    archiveBaseName.set("iNventMulti-desktop")
+    archiveVersion.set("1.0.0")
+    archiveClassifier.set("all")
+
+    // Punto de entrada
+    manifest {
+        attributes["Main-Class"] = "com.luigiercrest.inventmulti.MainKt"
+    }
+
+    // Incluir las clases compiladas del target jvm (desktop)
+    val desktopCompilation = kotlin.jvm().compilations["main"]
+    from(desktopCompilation.output.allOutputs)
+
+    // Incluir todas las dependencias (excluyendo duplicados)
+    from({
+        desktopCompilation.runtimeDependencyFiles.filter {
+            it.name.endsWith(".jar")
+        }.map { zipTree(it) }
+    })
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    dependsOn("jvmMainClasses")
 }

@@ -12,7 +12,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -212,7 +211,7 @@ fun DispositivoDetails (
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoriaExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor()
             )
             ExposedDropdownMenu(
                 expanded = categoriaExpanded,
@@ -246,7 +245,7 @@ fun DispositivoDetails (
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = estadoExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor()
             )
             ExposedDropdownMenu(
                 expanded = estadoExpanded,
@@ -280,7 +279,7 @@ fun DispositivoDetails (
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = usoExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor()
             )
             ExposedDropdownMenu(
                 expanded = usoExpanded,
