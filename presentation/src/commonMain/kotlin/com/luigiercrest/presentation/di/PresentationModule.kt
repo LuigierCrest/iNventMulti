@@ -15,5 +15,5 @@ val presentationModule = module {
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DetailViewModel(get(), get()) }
     viewModel { ChangePasswordViewModel(get(), get()) }
-    viewModel { CreateViewModel(get(), get()) }
+    viewModel { CreateViewModel(get(), get(), get()) }
 }

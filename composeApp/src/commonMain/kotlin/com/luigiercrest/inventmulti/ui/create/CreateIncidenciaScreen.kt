@@ -10,7 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,8 +30,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.ui.Screen
+import com.luigiercrest.inventmulti.utils.isValidDni
 import com.luigiercrest.presentation.create.CreateViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -46,10 +52,28 @@ fun CreateIncidenciaScreen(
     var idDispositivo by remember { mutableStateOf(idDispositivo.toString()) }
     var idCentro by remember { mutableStateOf(idCentro.toString()) }
     var idServicioTecnico by remember { mutableStateOf("") }
+    var servicioTecnicoExpanded by remember { mutableStateOf(false) }
+    var servicioTecnicoNombre by remember { mutableStateOf("") }
     var dniResponsable by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-    var fechaReporte by remember { mutableStateOf( "") }
     var estado by remember { mutableStateOf("") }
+
+    var dniError by remember { mutableStateOf<String?>(null) }
+
+    var estadoExpanded by remember { mutableStateOf(false) }
+    val estadoOpciones = listOf("Averiado", "En Servicio Técnico", "Reparado", "Faltan consumibles")
+
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+        viewModel.loadServicios()
+    }
+
+    LaunchedEffect(categoryId) {
+        if (categoryId == 9) {
+            dniResponsable = viewModel.getCurrentUserDni()
+            dniError = null
+        }
+    }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) onBackClick()
@@ -93,21 +117,63 @@ fun CreateIncidenciaScreen(
                 )
 
                 Spacer(modifier = Modifier.size(4.dp))
-                OutlinedTextField(
-                    value = idServicioTecnico,
-                    onValueChange = { idServicioTecnico = it },
-                    label = { Text("Nº de servicio técnico") },
+                ExposedDropdownMenuBox(
+                    expanded = servicioTecnicoExpanded,
+                    onExpandedChange = { servicioTecnicoExpanded = !servicioTecnicoExpanded },
                     modifier = Modifier.fillMaxWidth()
-                )
+                ) {
+                    OutlinedTextField(
+                        value = servicioTecnicoNombre,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Servicio técnico") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = servicioTecnicoExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = servicioTecnicoExpanded,
+                        onDismissRequest = { servicioTecnicoExpanded = false }
+                    ) {
+                        uiState.serviciosTecnicos.forEach { servicio ->
+                            DropdownMenuItem(
+                                text = { Text("${servicio.idServicioTecnico} - ${servicio.nombre}; ${servicio.direccion}") },
+                                onClick = {
+                                    idServicioTecnico = servicio.idServicioTecnico?.toString() ?: ""
+                                    servicioTecnicoNombre = servicio.nombre ?: "Servicio ${servicio.idServicioTecnico}"
+                                    servicioTecnicoExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(4.dp))
                 OutlinedTextField(
                     value = dniResponsable,
-                    onValueChange = { dniResponsable = it },
+                    onValueChange = { input ->
+                        val normalizado = input.trim().uppercase()
+                        dniResponsable = normalizado
+                        dniError = if (categoryId == 6 && normalizado.isNotBlank() && !isValidDni(normalizado)) {
+                            "DNI/NIE inválido"
+                        } else null
+                    },
                     label = { Text("DNI del responsable") },
-                    readOnly = (categoryId == 10), // para categoría 10 true
-                    enabled = (categoryId != 10), // para categoría 10 false
+                    singleLine = true,
+                    readOnly = categoryId == 9,
+                    enabled = categoryId != 9,
+                    isError = dniError != null,
                     modifier = Modifier.fillMaxWidth()
                 )
+                if (dniError != null) {
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = dniError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp),
+                        textAlign = TextAlign.Start
+                    )
+                }
                 Spacer(modifier = Modifier.size(4.dp))
                 OutlinedTextField(
                     value = descripcion,
@@ -115,25 +181,38 @@ fun CreateIncidenciaScreen(
                     label = { Text("Descripción") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.size(4.dp))
-                OutlinedTextField(
-                    value = fechaReporte,
-                    onValueChange = { fechaReporte = it },
-                    label = { Text("Fecha de reporte") },
-                    readOnly = (categoryId == 10), // para categoría 10 true
-                    enabled = (categoryId != 10), // para categoría 10 false
+
+                ExposedDropdownMenuBox(
+                    expanded = estadoExpanded,
+                    onExpandedChange = { estadoExpanded = !estadoExpanded },
                     modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                OutlinedTextField(
-                    value = estado,
-                    onValueChange = { estado = it },
-                    label = { Text("Estado") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                ) {
+                    OutlinedTextField(
+                        value = estado,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Estado") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = estadoExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = estadoExpanded,
+                        onDismissRequest = { estadoExpanded = false }
+                    ) {
+                        estadoOpciones.forEach { opcion ->
+                            DropdownMenuItem(
+                                text = { Text(opcion) },
+                                onClick = {
+                                    estado = opcion
+                                    estadoExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
 
                 Button(
@@ -144,7 +223,6 @@ fun CreateIncidenciaScreen(
                             idServicioTecnico = idServicioTecnico.toIntOrNull() ?: 0,
                             dniResponsable = dniResponsable,
                             descripcion = descripcion,
-                            fechaReporte = fechaReporte,
                             estado = estado
                         )
                     },
@@ -152,14 +230,18 @@ fun CreateIncidenciaScreen(
                             && idDispositivo.isNotBlank()
                             && idCentro.isNotBlank()
                             && idServicioTecnico.isNotBlank()
-                            && dniResponsable.isNotBlank()
+                            && (categoryId != 6 || (isValidDni(dniResponsable) && dniError == null))
                             && descripcion.isNotBlank()
-                            && fechaReporte.isNotBlank()
                             && estado.isNotBlank(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Crear incidencia")
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text("Crear incidencia")
+                    }
                 }
+
                 uiState.errorMessage?.let { error ->
                     Text(
                         text = error,

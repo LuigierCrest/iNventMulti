@@ -3,6 +3,7 @@ package com.luigiercrest.domain.usecase
 import com.luigiercrest.domain.models.CreateResponseModel
 import com.luigiercrest.domain.models.IncidenciaModel
 import com.luigiercrest.domain.models.UsuarioModel
+import com.luigiercrest.domain.models.UsuarioResponseModel
 import com.luigiercrest.domain.repository.CreateRepository
 
 class CreateUseCase (
@@ -14,6 +15,10 @@ class CreateUseCase (
 
     suspend fun createIncidencia(token: String, incidenciaModel: IncidenciaModel): Result<CreateResponseModel>{
         return createRepositoty.createIncidencia(token, incidenciaModel)
+    }
+
+    suspend fun getUsuarioById(token: String, idUsuario: Int): Result<UsuarioResponseModel> {
+        return createRepositoty.getUsuarioById(token, idUsuario)
     }
 
 

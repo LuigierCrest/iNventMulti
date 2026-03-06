@@ -1,6 +1,5 @@
 package com.luigiercrest.inventmulti.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.luigiercrest.inventmulti.navigation.NavRoutes
+import com.luigiercrest.inventmulti.utils.isValidDni
 import com.luigiercrest.presentation.navigation.AuthNavigation
 import inventmulti.composeapp.generated.resources.Res
-import inventmulti.composeapp.generated.resources.iNvent_logo_wellcome
 import org.jetbrains.compose.resources.painterResource
 import com.luigiercrest.presentation.login.LoginViewModel
 import inventmulti.composeapp.generated.resources.iNvent_logo2
@@ -52,8 +51,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
-    backStack: NavBackStack<NavKey>,
-    viewModel: LoginViewModel = koinViewModel()
+    backStack: NavBackStack<NavKey>, viewModel: LoginViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -75,6 +73,7 @@ fun LoginScreen(
                     }
                     backStack.add(NavRoutes.Home)
                 }
+
                 else -> {}
             }
 
@@ -85,13 +84,9 @@ fun LoginScreen(
         Scaffold { innerPadding ->
 
             Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(innerPadding)
-                    .safeContentPadding()
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .imePadding(),
+                modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(innerPadding).safeContentPadding().fillMaxSize()
+                    .verticalScroll(rememberScrollState()).imePadding(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -123,8 +118,7 @@ fun LoginScreen(
                     Text(
                         text = "DNI/NIE inválido",
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .padding(top = 4.dp),
+                        modifier = Modifier.padding(top = 4.dp),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -143,8 +137,7 @@ fun LoginScreen(
                             contentDescription = if (!passwordVisible) "Mostrar contraseña" else "Ocultar contraseña",
                             modifier = Modifier.size(36.dp).clickable {
                                 passwordVisible = !passwordVisible
-                            }
-                        )
+                            })
                     },
                     singleLine = true
                 )
@@ -153,8 +146,7 @@ fun LoginScreen(
                     Text(
                         text = "La contraseña no puede estar vacía",
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .padding(top = 4.dp),
+                        modifier = Modifier.padding(top = 4.dp),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -165,50 +157,29 @@ fun LoginScreen(
                     onClick = { checkUserAndPassword(dniState.value, passwd.value, viewModel) },
                     enabled = !state.value.isLoading && dniValue.isNotEmpty() && isDniValid
                 ) {
-                    Text(text = "Comenzar")
-                }
-                Spacer(modifier = Modifier.size(4.dp))
+                    if (state.value.isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(text = "Comenzar")
+                    }
+                    Spacer(modifier = Modifier.size(4.dp))
 
-                AnimatedVisibility(state.value.isLoading) {
-                    CircularProgressIndicator()
-                }
+                    state.value.error?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-                state.value.error?.let {
-                    Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
                 }
 
             }
-
         }
+
     }
-
 }
-
-fun isValidDni(dniValue: String): Boolean {
-    val dniToValidate = dniValue.trim().uppercase()
-    if (dniToValidate.length != 9) return false
-    val letras = "TRWAGMYFPDXBNJZSQVHLCKE"
-    // Control primer dígito del NIE
-    val numeros = when (dniToValidate[0]) {
-        'X' -> "0" + dniToValidate.substring(1, 8)
-        'Y' -> "1" + dniToValidate.substring(1, 8)
-        'Z' -> "2" + dniToValidate.substring(1, 8)
-        else -> dniToValidate.substring(0, 8)
-    }
-    if (!numeros.all { it.isDigit() }) return false
-    val numero = numeros.toIntOrNull() ?: return false
-    // Control letra del DNI/NIE
-    val expected = letras[numero % 23]
-    return dniToValidate[8] == expected
-}
-
 
 private fun checkUserAndPassword(dni: String, passwd: String, viewModel: LoginViewModel) {
     // Se comprueban los datos por última vez antes de llamar a la API para evitar llamadas innecesarias

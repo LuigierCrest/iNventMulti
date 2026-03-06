@@ -19,5 +19,18 @@ object UsuariosResponseMapper {
             )
         }
     }
+    fun toModel (usuarioDTO: UsuarioDTO, status: Int): UsuarioResponseModel {
+        return UsuarioResponseModel(
+            idUsuario = usuarioDTO.idUsuario,
+            dni = usuarioDTO.dni,
+            idCentro = usuarioDTO.idCentro,
+            nombre = usuarioDTO.nombre,
+            apellidos = usuarioDTO.apellidos,
+            email = usuarioDTO.email,
+            departamento = usuarioDTO.departamento,
+            rol = usuarioDTO.rol,
+            statusCode = status
+        )
+    }
 
 }

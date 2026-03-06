@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,7 +56,6 @@ import com.luigiercrest.domain.models.ServicioTecnicoModel
 import com.luigiercrest.domain.models.ServicioTecnicoResponseModel
 import com.luigiercrest.domain.models.UsuarioModel
 import com.luigiercrest.domain.models.UsuarioResponseModel
-import com.luigiercrest.inventmulti.navigation.NavRoutes
 import com.luigiercrest.inventmulti.navigation.RefreshEventAfterDelOrUpdate
 import com.luigiercrest.inventmulti.ui.details.AsignacionDetails
 import com.luigiercrest.inventmulti.ui.details.CentroDetails
@@ -96,16 +96,11 @@ fun DetailScreen(
     // Usar el item del SharedItemHolder si estamos en multiPane, si no el parámetro directo
     val effectiveItem = if (isMultiPane) currentItem else item
 
-    val isEmpty by SharedItemHolder.isEmpty.collectAsState()
-    val launchKey = if (isMultiPane) currentVersion else effectiveItem
-
-    LaunchedEffect(launchKey) {
-        viewModel.clearEdited()
-        val itemToLoad = if (isMultiPane) SharedItemHolder.selectedItem.value else effectiveItem
+    LaunchedEffect(currentVersion) {
+        viewModel.clearState()
+        val itemToLoad = if (isMultiPane) SharedItemHolder.selectedItem.value else SharedItemHolder.selectedItem.value
         if (itemToLoad != null) {
             viewModel.setSelectedItem(itemToLoad)
-        } else {
-            viewModel.clearState()
         }
     }
 
@@ -312,25 +307,27 @@ fun DetailScreen(
                     }
                 }
                 // Mostrar detalles según categoría
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    when (categoryId) {
-                        1 -> state.centro?.let { CentroDetails(it,viewModel) }
-                        2 -> state.proveedor?.let { ProveedorDetails(it, viewModel) }
-                        3 -> state.servicio?.let { ServicioTecnicoDetails(it, viewModel) }
-                        4 -> state.asignacion?.let { AsignacionDetails(it,viewModel) }
-                        5, 8 -> state.usuario?.let { UsuarioDetails(it, categoryId, viewModel)}
-                        6, 9 -> state.dispositivo?.let {
-                            DispositivoDetails(
-                                dispositivo = it,
-                                categoryId = categoryId,
-                                viewModel = viewModel,
-                                onCreateIncidencia = {
-                                    categoryId, idDispositivo, idCentro ->
-                                    onCreateIncidencia( categoryId, idDispositivo, idCentro)
-                                }
-                            )
+                key(currentVersion) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        val displayItem = if (state.selectedItem != null) state.selectedItem else effectiveItem
+                        when (categoryId) {
+                            1 -> (displayItem as? CentroResponseModel)?.let { CentroDetails(it, viewModel) }
+                            2 -> (displayItem as? ProveedorResponseModel)?.let { ProveedorDetails(it, viewModel) }
+                            3 -> (displayItem as? ServicioTecnicoResponseModel)?.let { ServicioTecnicoDetails(it, viewModel) }
+                            4 -> (displayItem as? AsignacionResponseModel)?.let { AsignacionDetails(it, viewModel) }
+                            5, 8 -> (displayItem as? UsuarioResponseModel)?.let { UsuarioDetails(it, categoryId, viewModel) }
+                            6, 9 -> (displayItem as? DispositivoResponseModel)?.let {
+                                DispositivoDetails(
+                                    dispositivo = it,
+                                    categoryId = categoryId,
+                                    viewModel = viewModel,
+                                    onCreateIncidencia = { categoryId, idDispositivo, idCentro ->
+                                        onCreateIncidencia(categoryId, idDispositivo, idCentro)
+                                    }
+                                )
+                            }
+                            7, 10 -> (displayItem as? IncidenciaResponseModel)?.let { IncidenciaDetails(it, viewModel, categoryId) }
                         }
-                        7, 10 -> state.incidencia?.let { IncidenciaDetails(it, viewModel,categoryId) }
                     }
                 }
 

@@ -62,7 +62,7 @@ class ApiConnection(private val httpClient: HttpClient) {
     private val RESP_URL = "${BASE_URL}/api/resp"
     val DISPOSITIVOS_CENTRO_URL = "${RESP_URL}/dispositivoscentro"
     val INCIDENCIAS_CENTRO_URL = "${RESP_URL}/incidenciascentro"
-    val SERVICIOS_CENTRO_URL = "${RESP_URL}/serviciostecnicos"
+//    val SERVICIOS_CENTRO_URL = "${RESP_URL}/serviciostecnicos"
 
     // Autenticado: cambiar contraseña propia
 
@@ -482,6 +482,43 @@ class ApiConnection(private val httpClient: HttpClient) {
         }
     }
 
+    suspend fun getUsuarioById(
+        token: String,
+        idUsuario: Int
+    ): Result<NetworkResult<UsuarioDTO>> {
+        return try {
+            val response: HttpResponse = httpClient.get(USUARIOS_URL + "/id/${idUsuario}") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+            val status = response.status.value
+            val body = try {
+                response.bodyAsText()
+            } catch (e: Exception) {
+                println(e.message)
+                null
+            }
+            val result: Result<NetworkResult<UsuarioDTO>> = if (response.status.isSuccess()) {
+                val dto = if (!body.isNullOrEmpty()) {
+                    Json.decodeFromString<UsuarioDTO>(body)
+                } else {
+                    null
+                }
+                Result.success(NetworkResult(dto, status, body))
+            } else {
+                Result.success(NetworkResult(null, status, body))
+            }
+
+            println("LOG - GetUsuarioById ${idUsuario} response Status: ${response.status}")
+            result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun deleteDispositivo(
         token: String,
         idDispositivo: Int
@@ -511,6 +548,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente
+                println("LOG - Error parsing DeleteDispositivo response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -551,6 +589,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente
+                println("LOG - Error parsing DeleteIncidencia response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -593,6 +632,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente
+                println("LOG - Error parsing DeleteUsuario response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -634,6 +674,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing DeleteCentro response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -674,6 +715,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing DeleteProveedor response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -715,6 +757,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing DeleteServicioTecnico response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -756,6 +799,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing DeleteAsignacion response: ${e.message}")
                 DeleteResponseDTO(body = body, statusCode = status)
             }
 
@@ -799,6 +843,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateCentro response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
 
@@ -841,6 +886,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateProveedor response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -882,6 +928,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateUsuario response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -923,6 +970,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateServicioTecnico response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -960,6 +1008,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateAsignacion response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -997,6 +1046,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateDispositivo response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -1034,6 +1084,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                 }
             } catch (e: Exception) {
                 // Si falla el parseo, crea el DTO manualmente con la respueta de texto plano
+                println("LOG - Error parsing UpdateIncidencia response: ${e.message}")
                 UpdateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -1072,6 +1123,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                     ChangePasswordResponseDTO(body = body, statusCode = status)
                 }
             } catch (e: Exception) {
+                println("LOG - Error parsing ChangePassword response: ${e.message}")
                 ChangePasswordResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -1109,6 +1161,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                     CreateResponseDTO(body = body, statusCode = status)
                 }
             } catch (e: Exception) {
+                println("LOG - Error parsing createUsuario response: ${e.message}")
                 CreateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))
@@ -1131,6 +1184,8 @@ class ApiConnection(private val httpClient: HttpClient) {
                     append("Authorization", "Bearer $token")
                 }
                 setBody(incidenciaDTO)
+                println("LOG - createIncidencia DTO: $incidenciaDTO")
+                println("JSON: ${Json.encodeToString(incidenciaDTO)}")
             }
             val status = response.status.value
             val body = try {
@@ -1146,6 +1201,7 @@ class ApiConnection(private val httpClient: HttpClient) {
                     CreateResponseDTO(body = body, statusCode = status)
                 }
             } catch (e: Exception) {
+                println("LOG - Error parsing createIncidencia response: ${e.message}")
                 CreateResponseDTO(body = body, statusCode = status)
             }
             val result = Result.success(NetworkResult(dto, status, body))

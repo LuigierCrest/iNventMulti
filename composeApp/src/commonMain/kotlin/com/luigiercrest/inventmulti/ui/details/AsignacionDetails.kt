@@ -1,22 +1,16 @@
 package com.luigiercrest.inventmulti.ui.details
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -67,7 +61,7 @@ fun AsignacionDetails(
                         val localDate = Instant.fromEpochMilliseconds(millis)
                             .toLocalDateTime(TimeZone.UTC)
                             .date
-                        entrega = localDate.toString() // formato yyyy-MM-dd
+                        entrega = localDate.toString() // yyyy-MM-dd
                     }
                     showDatePicker = false
                 }) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luigiercrest.domain.models.IncidenciaModel
 import com.luigiercrest.domain.models.UsuarioModel
+import com.luigiercrest.domain.usecase.CategoryUseCase
 import com.luigiercrest.domain.usecase.CreateUseCase
 import com.luigiercrest.presentation.security.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class CreateViewModel(
     private val createUseCase: CreateUseCase,
-    private val secureStorage: SecureStorage
+    private val secureStorage: SecureStorage,
+    private val categoryUseCase: CategoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CreateUIState())
@@ -26,7 +28,7 @@ class CreateViewModel(
         email: String,
         departamento: String,
         rol: String,
-        contrasena: String
+        password: String
     ) {
         viewModelScope.launch {
             _state.value = CreateUIState(isLoading = true)
@@ -46,7 +48,7 @@ class CreateViewModel(
                     email = email,
                     departamento = departamento,
                     rol = rol,
-                    passwdHash = contrasena
+                    passwdHash = password
                 )
             )
             _state.value = if (result.isSuccess) {
@@ -61,13 +63,26 @@ class CreateViewModel(
         }
     }
 
+    fun resetState() {
+        _state.value = CreateUIState()
+    }
+
+    fun loadServicios() {
+        viewModelScope.launch {
+            val token = secureStorage.getAuth()?.token ?: return@launch
+            val result = categoryUseCase.getServicios(token)
+            if (result.isSuccess) {
+                _state.value = _state.value.copy(serviciosTecnicos = result.getOrDefault(emptyList()))
+            }
+        }
+    }
+
     fun createIncidencia(
         idCentro: Int,
         idDispositivo: Int,
         idServicioTecnico: Int,
         dniResponsable: String,
         descripcion: String,
-        fechaReporte: String,
         estado: String
     ) {
         viewModelScope.launch {
@@ -86,8 +101,6 @@ class CreateViewModel(
                     idServicioTecnico = idServicioTecnico,
                     dniResponsable = dniResponsable,
                     descripcion = descripcion,
-                    fechaReporte = fechaReporte,
-                    fechaCierre = null,
                     estado = estado
                 )
             )
@@ -100,6 +113,17 @@ class CreateViewModel(
             } else {
                 CreateUIState(errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido")
             }
+        }
+    }
+
+    suspend fun getCurrentUserDni(): String {
+        val idUsuario = secureStorage.getAuth()?.idUsuario
+        val token = secureStorage.getAuth()?.token
+        val result = createUseCase.getUsuarioById(token ?: "", idUsuario ?: 0)
+        return if (result.isSuccess) {
+            result.getOrNull()?.dni ?: "DNI no encontrado"
+        } else {
+            "Error al obtener DNI"
         }
     }
 }

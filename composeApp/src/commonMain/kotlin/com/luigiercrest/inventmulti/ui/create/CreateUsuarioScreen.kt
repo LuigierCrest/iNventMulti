@@ -38,7 +38,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.luigiercrest.inventmulti.ui.Screen
-import com.luigiercrest.inventmulti.ui.isValidDni
+import com.luigiercrest.inventmulti.utils.isValidDni
 import com.luigiercrest.presentation.create.CreateViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -63,15 +63,19 @@ fun CreateUsuarioScreen(
 
     val isDniValid = remember(dni) { isValidDni(dni) }
 
-    var contrasena by remember { mutableStateOf("") }
-    var confirmarContrasena by remember { mutableStateOf("") }
-    var contrasenaVisible by remember { mutableStateOf(false) }
-    var confirmarContrasenaVisible by remember { mutableStateOf(false) }
+    var password by remember { mutableStateOf("") }
+    var confirmarPassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmarPasswordVisible by remember { mutableStateOf(false) }
 
     val rolOptions = when (categoryId) {
         5 -> listOf("ADMIN", "DIRE", "RESP")
         8 -> listOf("DIRE", "RESP")
         else -> emptyList()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
     }
 
     LaunchedEffect(uiState.isSuccess) {
@@ -202,16 +206,16 @@ fun CreateUsuarioScreen(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
-                    value = contrasena,
-                    onValueChange = { if (it.length <= 100) contrasena = it },
+                    value = password,
+                    onValueChange = { if (it.length <= 100) password = it },
                     label = { Text("Contraseña") },
                     singleLine = true,
-                    visualTransformation = if (contrasenaVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        IconButton(onClick = { contrasenaVisible = !contrasenaVisible }) {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
-                                imageVector = if (contrasenaVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (contrasenaVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                                imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
                             )
                         }
                     },
@@ -220,23 +224,23 @@ fun CreateUsuarioScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = confirmarContrasena,
-                    onValueChange = { if (it.length <= 100) confirmarContrasena = it },
+                    value = confirmarPassword,
+                    onValueChange = { if (it.length <= 100) confirmarPassword = it },
                     label = { Text("Confirmar contraseña") },
                     singleLine = true,
-                    isError = confirmarContrasena.isNotEmpty() && contrasena != confirmarContrasena,
-                    visualTransformation = if (confirmarContrasenaVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    isError = confirmarPassword.isNotEmpty() && password != confirmarPassword,
+                    visualTransformation = if (confirmarPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        IconButton(onClick = { confirmarContrasenaVisible = !confirmarContrasenaVisible }) {
+                        IconButton(onClick = { confirmarPasswordVisible = !confirmarPasswordVisible }) {
                             Icon(
-                                imageVector = if (confirmarContrasenaVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (confirmarContrasenaVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                                imageVector = if (confirmarPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (confirmarPasswordVisible) "Ocultar contraseña" else "Mostrar contraseña"
                             )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (confirmarContrasena.isNotEmpty() && contrasena != confirmarContrasena) {
+                if (confirmarPassword.isNotEmpty() && password != confirmarPassword) {
                     Text(
                         text = "Las contraseñas no coinciden",
                         color = MaterialTheme.colorScheme.error,
@@ -256,7 +260,7 @@ fun CreateUsuarioScreen(
                             email = email,
                             departamento = departamento,
                             rol = rol,
-                            contrasena = contrasena
+                            password = password
                         )
                     },
                     enabled = !uiState.isLoading
@@ -264,12 +268,12 @@ fun CreateUsuarioScreen(
                             && nombre.isNotBlank()
                             && apellidos.isNotBlank()
                             && rol.isNotBlank()
-                            && contrasena.isNotBlank()
-                            && contrasena == confirmarContrasena,
+                            && password.isNotBlank()
+                            && password == confirmarPassword,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                        CircularProgressIndicator()
                     } else {
                         Text("Crear usuario")
                     }

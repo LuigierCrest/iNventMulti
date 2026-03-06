@@ -7,7 +7,7 @@ data class IncidenciaModel(
     val idServicioTecnico: Int?,
     val dniResponsable: String?,
     val descripcion: String?,
-    val fechaReporte: String?, //FECHA
-    val fechaCierre: String?, //FECHA
+    val fechaReporte: String?=null, //FECHA
+    val fechaCierre: String?=null, //FECHA
     val estado: String?
 )

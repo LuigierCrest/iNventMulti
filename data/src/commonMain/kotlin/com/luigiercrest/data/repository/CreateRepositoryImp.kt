@@ -3,9 +3,11 @@ package com.luigiercrest.data.repository
 import com.luigiercrest.data.database.datasource.ApiConnection
 import com.luigiercrest.data.mappers.IncidenciaMapper
 import com.luigiercrest.data.mappers.UsuarioMapper
+import com.luigiercrest.data.mappers.UsuariosResponseMapper
 import com.luigiercrest.domain.models.CreateResponseModel
 import com.luigiercrest.domain.models.IncidenciaModel
 import com.luigiercrest.domain.models.UsuarioModel
+import com.luigiercrest.domain.models.UsuarioResponseModel
 import com.luigiercrest.domain.repository.CreateRepository
 
 class CreateRepositoryImp(
@@ -45,6 +47,20 @@ class CreateRepositoryImp(
                     statusCode = network.status
                 )
             )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getUsuarioById(token: String, idUsuario: Int): Result<UsuarioResponseModel> {
+        return try {
+            val netResult = apiConnection.getUsuarioById(token, idUsuario)
+            if (netResult.isFailure) {
+                return Result.failure(netResult.exceptionOrNull()!!)
+            }
+            val network = netResult.getOrNull()!!
+            val body = network.body?: throw Exception("Response body is null")
+            Result.success(UsuariosResponseMapper.toModel(body, network.status))
         } catch (e: Exception) {
             Result.failure(e)
         }
